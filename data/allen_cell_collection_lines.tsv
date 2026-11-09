@@ -1,0 +1,54 @@
+line	gene	structure	tag_location	tag	alleles
+AICS-0005	PXN	matrix adhesions	C-terminus	EGFP	mono
+AICS-0010	SEC61B	endoplasmic reticulum	N-terminus	mEGFP	mono
+AICS-0011	TOMM20	mitochondria	C-terminus	mEGFP	mono
+AICS-0012	TUBA1B	microtubules	N-terminus	mEGFP	mono
+AICS-0013	LMNB1	nuclear envelope	N-terminus	mEGFP	mono
+AICS-0014	FBL	nucleolus (dense fibrillar component)	C-terminus	mEGFP	mono
+AICS-0016	ACTB	actin filaments	N-terminus	mEGFP	mono
+AICS-0017	DSP	desmosomes	C-terminus	mEGFP	mono
+AICS-0022	LAMP1	lysosomes	C-terminus	mEGFP	mono
+AICS-0023	TJP1	tight junctions	N-terminus	mEGFP	mono
+AICS-0024	MYH10	actomyosin bundles	N-terminus	mEGFP	mono
+AICS-0025	ST6GAL1	Golgi	C-terminus	mEGFP	mono and bi
+AICS-0030	MAP1LC3B	autophagosomes	N-terminus	mEGFP	mono
+AICS-0031	TUBA1B	microtubules	N-terminus	mTagRFP-T	mono
+AICS-0032	CETN2	centrioles	N-terminus	mTagRFP-T	mono
+AICS-0033	SLC25A17	peroxisomes	C-terminus	mEGFP	mono
+AICS-0034	LMNB1	nuclear envelope	N-terminus	mTagRFP-T	mono
+AICS-0037	TNNI1	sarcomeric thin filaments	C-terminus	mEGFP	mono
+AICS-0040	RAB5A	endosomes	N-terminus	mEGFP	mono and bi
+AICS-0046	ATP2A2	sarcoplasmic reticulum/endoplasmic reticulum	N-terminus	mEGFP	mono
+AICS-0048	TTN	sarcomeres (M-line tag)	C-terminus	mEGFP	mono
+AICS-0052	MYL7	sarcomeric thick filaments	C-terminus	mEGFP	mono
+AICS-0053	GJA1	gap junctions	C-terminus	mEGFP	mono
+AICS-0057	NPM1	nucleolus (granular component)	C-terminus	mEGFP	mono
+AICS-0058	CTNNB1	adherens junctions	N-terminus	mEGFP	mono
+AICS-0059	SEC61B	endoplasmic reticulum	N-terminus	mEGFP	mono
+AICS-0059	LMNB1	nuclear envelope	N-terminus	mTagRFP-T	mono
+AICS-0060	MYL2	sarcomeric thick filaments	C-terminus	mEGFP	mono
+AICS-0061	HIST1H2BJ	histones	C-terminus	mEGFP	mono
+AICS-0063	DMD	costameres	C-terminus	mEGFP	mono
+AICS-0068	SMC1A	cohesins	C-terminus	mEGFP	mono
+AICS-0069	NUP153	nuclear pores	N-terminus	mEGFP	mono
+AICS-0074	SOX2	transcription factor	C-terminus	mEGFP	mono
+AICS-0075	ACTN2	sarcomeric z-disks	C-terminus	mEGFP	mono
+AICS-0078	TOMM20	mitochondria	C-terminus	mEGFP	mono
+AICS-0078	TUBA1B	microtubules	N-terminus	mTagRFP-T	mono
+AICS-0080	FUS	paraspeckles / stress granules	C-terminus	mEGFP	mono
+AICS-0082	G3BP1	stress granules	N-terminus	mEGFP	mono
+AICS-0083	DCP1A	processing bodies (P-bodies)	N-terminus	mEGFP	mono and bi
+AICS-0084	FBL	nucleolus (dense fibrillar component)	C-terminus	mEGFP	mono
+AICS-0084	NPM1	nucleolus (granular component)	C-terminus	mTagRFP-T	mono
+AICS-0086	UBTF	nucleolus (fibrillar center)	N-terminus	HaloTag	mono
+AICS-0087	TFAM	mitochondrial nucleoids	C-terminus	mEGFP	mono
+AICS-0088	PCNA	DNA replication foci	N-terminus	mEGFP	mono
+AICS-0093	TERF2	telomeres	N-terminus	mEGFP	mono
+AICS-0094	SON	nuclear speckles	N-terminus	mEGFP	mono
+AICS-0095	EZH2	polycomb repressive complex 2	N-terminus	mEGFP	mono
+AICS-0096	POLR2A	RNA polymerase II	N-terminus	mEGFP	mono
+AICS-0099	CTCF	CTCF-binding sites	N-terminus	mEGFP	mono
+AICS-0114	CDH1	adherens junctions	C-terminus	mEGFP	mono and bi
+AICS-0120	TOMM20	mitochondria	C-terminus	mEGFP	mono
+AICS-0122	EOMES	transcription factor	C-terminus	mEGFP	mono
+AICS-0126	CDH5	endothelial adherens junctions	C-terminus	mEGFP	mono and bi

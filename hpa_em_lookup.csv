@@ -1,0 +1,50 @@
+hpa_location,em_correlate,structure,note
+Nuclear membrane,yes,nuclear envelope,double membrane with pores
+Nucleoli,yes,nucleolus,dense granular body
+Nucleoli fibrillar center,yes,nucleolus (fibrillar center),sub-nucleolar
+Nucleoli rim,yes,nucleolus (rim),sub-nucleolar
+Mitochondria,yes,mitochondrion,double membrane and cristae
+Endoplasmic reticulum,yes,ER membrane or lumen,
+Golgi apparatus,yes,Golgi stack,
+Plasma membrane,yes,plasma membrane,
+Lysosomes,yes,lysosome,dense body; HPA rarely calls it (most sit in Vesicles)
+Peroxisomes,yes,peroxisome,rarely called by HPA
+Endosomes,yes,endosome,rarely called by HPA
+Lipid droplets,yes,lipid droplet,
+Centrosome,yes,centriole pair,
+Basal body,yes,basal body (centriole),
+Centriolar satellite,partial,pericentriolar granules,
+Microtubules,yes,microtubule,resolvable in cryo-ET; marginal in FIB-SEM
+Mitotic spindle,yes,spindle microtubules,division state only
+Microtubule ends,partial,microtubule plus end,
+Actin filaments,partial,actin bundles or stress fibers,
+Focal adhesion sites,partial,focal adhesion plaque,
+Cell Junctions,yes,cell junction,
+Intermediate filaments,partial,IF bundles,
+Nuclear speckles,partial,interchromatin granule cluster,
+Nuclear bodies,partial,nuclear body,depends on which body
+Mitotic chromosome,yes,condensed chromosome,division state only
+Kinetochore,yes,kinetochore,division state only
+Cytokinetic bridge,yes,midbody,division state only
+Midbody,yes,midbody,division state only
+Midbody ring,yes,midbody ring,division state only
+Cleavage furrow,partial,cleavage furrow,division state only
+Vesicles,partial,vesicle (unspecified),needs sub-identity from other sources
+Cytoplasmic bodies,no,,
+Aggresome,no,,
+Rods & Rings,no,,
+Nucleoplasm,no,,diffuse
+Cytosol,no,,diffuse
+Primary cilium,partial,primary cilium,rare in U2-OS
+Primary cilium tip,partial,primary cilium,rare in U2-OS
+Primary cilium transition zone,partial,primary cilium,rare in U2-OS
+Principal piece,no,,sperm only
+Mid piece,no,,sperm only
+End piece,no,,sperm only
+Flagellar centriole,no,,sperm only
+Acrosome,no,,sperm only
+Connecting piece,no,,sperm only
+Equatorial segment,no,,sperm only
+Calyx,no,,sperm only
+Perinuclear theca,no,,sperm only
+Annulus,no,,sperm only
