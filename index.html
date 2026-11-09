@@ -9,7 +9,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{background:var(--bg);font-family:Lato,Arial,Helvetica,sans-serif;color:var(--ink);font-size:13px}
-  .app{height:100vh;display:grid;grid-template-rows:56px 1fr;grid-template-columns:260px 1fr 380px}
+  .app{height:100vh;display:grid;grid-template-rows:56px 1fr;grid-template-columns:240px 1fr 340px}
   header{grid-column:1/4;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:18px}
   header h1{font-size:18px;font-weight:700;white-space:nowrap}
   header .sub{font-size:13px;color:var(--grey)}
@@ -52,7 +52,7 @@
   th.sorted{color:var(--teal)}
   th.num{text-align:right}
   td{padding:8px 8px;border-bottom:1px solid #f0f0f0;vertical-align:middle;white-space:nowrap}
-  td.st{max-width:270px;overflow:hidden;text-overflow:ellipsis}
+  td.st{max-width:230px;overflow:hidden;text-overflow:ellipsis}
   th{padding:10px 8px}
   td.num{text-align:right;font-variant-numeric:tabular-nums}
   tr{cursor:pointer}
@@ -92,7 +92,10 @@
   .modal td,.modal th{padding:5px 8px;white-space:normal;vertical-align:top;cursor:default}
   .modal th{position:static;cursor:default}
   .loading{grid-column:2/4;display:flex;align-items:center;justify-content:center;color:var(--grey)}
-  @media (max-width:1100px){.app{grid-template-columns:220px 1fr 320px}}
+  @media (max-width:1500px){td.st{max-width:190px}td,th{padding-left:6px;padding-right:6px}}
+  @media (max-width:1300px){.app{grid-template-columns:220px 1fr 300px}header .sub{display:none}}
+  @media (max-width:1100px){.app{grid-template-columns:210px 1fr}.detail{position:fixed;top:56px;right:0;bottom:0;width:min(360px,90vw);box-shadow:-6px 0 20px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
+  .detail .closeD{display:none;float:right;font:inherit;font-size:18px;border:none;background:none;color:var(--grey);cursor:pointer}
 </style></head>
 <body>
 <div class="app">
@@ -181,7 +184,7 @@
 const FAMS=['nuclear envelope','nucleolus','nuclear bodies','centromere/kinetochore','chromosome','mitochondria','ER','Golgi','endolysosomal','peroxisome','lipid droplet','centrosome','plasma membrane','junctions/adhesions','cytoskeleton','no location'];
 const FAMLBL={'nuclear envelope':'Nuclear envelope','nucleolus':'Nucleolus','nuclear bodies':'Nuclear bodies','centromere/kinetochore':'Centromere / kinetochore','chromosome':'Chromosome','mitochondria':'Mitochondria','ER':'ER','Golgi':'Golgi','endolysosomal':'Endolysosomal','peroxisome':'Peroxisome','lipid droplet':'Lipid droplet','centrosome':'Centrosome','plasma membrane':'Plasma membrane','junctions/adhesions':'Junctions / adhesions','cytoskeleton':'Cytoskeleton','no location':'No location'};
 const CRITS=[['score_identity','Identity','Structure identity'],['score_sources_agree','Agree','Sources agree'],['score_antibody','Antibody','HPA antibody'],['score_expressed_u2os','U2-OS','Expressed in U2-OS'],['score_copy_number','Copies','Copy number known'],['score_tag_evidence','Tagged','Tagged line exists']];
-const COLS=[['gene_name','Gene'],['em_structures','Structures'],...CRITS.map(c=>[c[0],c[1]]),['score_total','Total'],['copies_per_cell_U2OS','Copies / cell']];
+const COLS=[['gene_name','Gene'],['em_structures','Structures'],...CRITS.map(c=>[c[0],c[1]]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
 const NUM=new Set(['score_total','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
 let DATA=[],BASE=[],VIEW=[],sel=null,sortKey='score_total',sortDir=-1,shown=0;
 const S={q:'',fams:new Set(),expr:false,tag:false,copy:false,nothpa:false,tm:false,minTotal:0,crit:{}};
@@ -192,7 +195,7 @@ const dots=v=>`<span class="dots"><i class="d ${v>=1?(v>=2?'two':'one'):''}"></i
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const PARTIAL=new Set(['chromosome (broad)','cytoskeleton (broad)','vesicle (unspecified)','cell projection']);
 
-function parseTSV(t){const lines=t.split('\n');const h=lines[0].split('\t');const out=[];for(let i=1;i<lines.length;i++){if(!lines[i])continue;const c=lines[i].split('\t');const o={};for(let j=0;j<h.length;j++)o[h[j]]=c[j]??'';o.fams=o.compartment_family?o.compartment_family.split(';'):['no location'];o.structs=o.em_structures?o.em_structures.split(';'):[];o.copies_raw=o.copies_per_cell_U2OS;for(const k of NUM){const v=o[k];o[k]=v===''?null:parseFloat(String(v).replace(/^[<>~]/,''))}o._q=(o.gene_name+' '+o.uniprot).toLowerCase();out.push(o)}return out}
+function parseTSV(t){const lines=t.replace(/\r/g,'').split('\n');const h=lines[0].split('\t');const out=[];for(let i=1;i<lines.length;i++){if(!lines[i])continue;const c=lines[i].split('\t');const o={};for(let j=0;j<h.length;j++)o[h[j]]=c[j]??'';o.fams=o.compartment_family?o.compartment_family.split(';'):['no location'];o.structs=o.em_structures?o.em_structures.split(';'):[];o.copies_raw=o.copies_per_cell_U2OS;for(const k of NUM){const v=o[k];o[k]=v===''?null:parseFloat(String(v).replace(/^[<>~]/,''))}o._q=(o.gene_name+' '+o.uniprot).toLowerCase();out.push(o)}return out}
 
 function apply(){
   const q=S.q.trim().toLowerCase();
@@ -239,7 +242,7 @@ function showDetail(r){
     score_copy_number:r.copies_per_cell_U2OS==null?'Not measured in Beck 2011.':`${fmtCopies(r)} copies per cell in U2OS (Beck 2011)${r.mitotic_ratio?`. Mitotic over interphase ratio ${r.mitotic_ratio}`:''}.`,
     score_tag_evidence:r.tag_lines?r.tag_lines.split(';').map(t=>t.replace('OpenCell','OpenCell (HEK293T)').replace('Allen','Allen Cell (hiPSC)')).join('; ')+'.':'No OpenCell or Allen line found.'};
   const hpaUrl=r.ensembl&&r.ensembl.startsWith('ENSG')?`https://www.proteinatlas.org/${r.ensembl}-${r.gene_name}/subcellular`:null;
-  $('detail').innerHTML=`<h2>${esc(r.gene_name)}</h2>
+  $('detail').classList.add('open');$('detail').innerHTML=`<button class="closeD" onclick="document.getElementById('detail').classList.remove('open')">×</button><h2>${esc(r.gene_name)}</h2>
     <div class="acc">${esc(r.uniprot||'')}${r.ensembl?' · '+esc(r.ensembl):''}<br>${r.fams.map(f=>FAMLBL[f]||f).join(', ')}</div>
     <div class="links">${hpaUrl?`<a href="${hpaUrl}" target="_blank">HPA</a>`:''}${r.uniprot?`<a href="https://www.uniprot.org/uniprotkb/${r.uniprot}/entry" target="_blank">UniProt</a>`:''}${r.tag_lines.includes('OpenCell')?`<a href="https://opencell.sf.czbiohub.org/search?query=${r.gene_name}" target="_blank">OpenCell</a>`:''}<a href="https://depmap.org/portal/gene/${r.gene_name}?tab=overview" target="_blank">DepMap</a></div>
     <div class="card"><h5>Score, ${r.score_total} of 12</h5><div class="sc">${CRITS.map(c=>`<span>${c[2]}</span>${dots(r[c[0]])}<span>${r[c[0]]}</span><div class="why">${esc(why[c[0]])}</div>`).join('')}</div></div>
