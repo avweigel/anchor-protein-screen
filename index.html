@@ -238,6 +238,9 @@
   tr:not(.grp) th[data-k].sorted.asc::after{border-bottom-color:var(--accent)}
   tr:not(.grp) th[data-k].sorted.desc::before{border-top-color:var(--accent)}
   th.sorted::after{margin-left:0}
+  th.sorted[data-n]:not([data-n="0"]) .lvl{display:inline-flex}
+  .lvl{display:none;position:absolute;top:1px;right:1px;align-items:center;justify-content:center;min-width:12px;height:12px;border-radius:6px;background:var(--accent);color:#fff;font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0;line-height:1}
+  .foot .hint{color:var(--ink-3)}
   th.c[data-k]{padding-right:14px}
   thead tr.grp th.g{cursor:pointer;position:sticky;padding-right:6px}
   thead tr.grp th.g:hover{color:var(--accent)}
@@ -345,7 +348,7 @@
   <h3>Quantifiable</h3><p><em>Enough copies per cell to count, not so many they saturate; a published number to check against.</em></p>
   <p><strong>Copy number known.</strong> 2 if Beck et al. 2011 measured copies per cell in U2-OS, 1 if not. The number itself is in the last column; "enough, not too many" is a judgment.</p>
   <h3>Imageable</h3><p><em>The tag signal survives cryo preparation, and the structure is still recognizable.</em></p>
-  <p>Not scored. No dataset answers this; it needs an experiment.</p>
+  <p>Not scored yet. No dataset answers this; it gets scored by experiment once there is a shorter list, to help decide between candidates.</p>
   <h3>Practical</h3><p><em>A validated antibody exists; a line can be made in 2027 with tags that exist today.</em></p>
   <p><strong>HPA antibody.</strong> HPA immunofluorescence reliability: 2 for Enhanced or Supported, 1 for Approved, 0 for Uncertain or no IF data. Proteins with good antibodies elsewhere can score 0 here. Whether a line can be made is not scored.</p>
 </div></div>
@@ -381,14 +384,17 @@ const GROUPS=[
   {k:'identity',label:'Identity',ask:'A clear structure in EM, and sources agree on where it sits in U2-OS.',data:'Three scores: a structure an EM volume can show, HPA and UniProt agreeing on the compartment, and RNA expression in U2-OS.',crits:['score_identity','score_sources_agree','score_expressed_u2os']},
   {k:'taggable',label:'Taggable',ask:'Takes an endogenous tag without moving or changing level; a homozygous line is viable.',data:'Only one thing is in a database: whether an OpenCell or Allen line already exists. Whether it tolerates a tag, or a homozygous line is viable, is not. DepMap essentiality (in the detail panel) is a hint, nothing more.',crits:['score_tag_evidence']},
   {k:'quantifiable',label:'Quantifiable',ask:'Enough copies per cell to count, not so many they saturate; a published number to check against.',data:'Whether Beck et al. 2011 measured copies per cell in U2-OS. "Enough, not too many" is a judgment; the number itself is in the last column.',crits:['score_copy_number']},
-  {k:'imageable',label:'Imageable',ask:'The tag signal survives cryo preparation, and the structure is still recognizable.',data:'No dataset answers this. It needs an experiment, so it is not scored.',crits:[]},
+  {k:'imageable',label:'Imageable',ask:'The tag signal survives cryo preparation, and the structure is still recognizable.',data:'No dataset answers this. It gets scored by experiment once there is a shorter list, to help decide between candidates.',crits:[]},
   {k:'practical',label:'Practical',ask:'A validated antibody exists; a line can be made in 2027 with tags that exist today.',data:'HPA immunofluorescence reliability for the antibody. Whether a line can be made is not scored.',crits:['score_antibody']}];
 const CRITS=[['score_identity','Structure','Structure in EM','Does it sit on a structure an EM volume can show? 2 clear structure, 1 broad class, 0 diffuse or unknown.'],['score_sources_agree','Agree','Sources agree','Do HPA and UniProt put it in the same compartment? 2 yes, 1 only one has a location, 0 they disagree.'],['score_expressed_u2os','U2-OS','Expressed in U2-OS','Is it expressed in U2-OS cells? 2 at 10 nTPM or more, 1 at 1 or more, 0 below.'],['score_tag_evidence','Line','Tagged line exists','Has someone already tagged it? 2 an OpenCell or Allen line exists, 1 not yet.'],['score_copy_number','Copies','Copy number known','Do we know how many copies per cell? 2 measured in U2-OS (Beck 2011), 1 not measured.'],['score_antibody','Antibody','HPA antibody','How reliable is the HPA immunofluorescence? 2 enhanced or supported, 1 approved, 0 uncertain or none.']];
 const CRIT=Object.fromEntries(CRITS.map(c=>[c[0],c]));
-const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>[k,CRIT[k][1]]):[['_img','not scored']]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
+const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>[k,CRIT[k][1]]):[['_img','later']]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
 const NUM=new Set(['score_total','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
 const CENTER=new Set(CRITS.map(c=>c[0]));
-let DATA=[],BASE=[],VIEW=[],sel=null,sortKey='score_total',sortDir=-1,shown=0;
+let DATA=[],BASE=[],VIEW=[],sel=null,shown=0;
+let SORT=[{k:'score_total',d:-1}];
+const sortIdx=k=>SORT.findIndex(x=>x.k===k);
+const LABEL=k=>k==='gene_name'?'Gene':k==='em_structures'?'Structures':k==='score_total'?'Total':k==='copies_per_cell_U2OS'?'Copies/cell':k.startsWith('_g_')?GROUPS.find(g=>'_g_'+g.k===k).label:(CRIT[k]?CRIT[k][2]:k);
 const S0=()=>({q:'',fams:new Set(),nothpa:false,tm:false,minTotal:0,crit:{},cmin:null,cmax:null});
 let S=S0();
 GROUPS.forEach(g=>{if(g.crits.length)NUM.add('_g_'+g.k)});
@@ -437,7 +443,8 @@ function syncSidebar(){
   $('minTotal').value=S.minTotal;$('minTotalLbl').textContent=S.minTotal?S.minTotal+' and up':'any';
   $('f-nothpa').checked=S.nothpa;$('f-tm').checked=S.tm;if($('q').value!==S.q)$('q').value=S.q}
 function resetAll(){S=S0();$('cmin').value='';$('cmax').value='';apply()}
-function sortView(){const k=sortKey,d=sortDir;VIEW.sort((a,b)=>{let x=a[k],y=b[k];if(NUM.has(k)){x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*d||a.gene_name.localeCompare(b.gene_name)}return String(x).localeCompare(String(y))*d||a.gene_name.localeCompare(b.gene_name)})}
+function cmp(a,b,k,d){let x=a[k],y=b[k];if(NUM.has(k)){x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*d}return String(x).localeCompare(String(y))*d}
+function sortView(){VIEW.sort((a,b)=>{for(const {k,d} of SORT){const c=cmp(a,b,k,d);if(c)return c}return a.gene_name.localeCompare(b.gene_name)})}
 
 function render(){
   const famCount={};for(const f of FAMS)famCount[f]=0;
@@ -446,15 +453,18 @@ function render(){
   const hist=new Array(13).fill(0);for(const r of VIEW)hist[r.score_total]++;const mx=Math.max(1,...hist);
   $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''} ${S.minTotal&&i===S.minTotal?'cut':''}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?n.toLocaleString('en'):''}</em><span>${i}</span></div>`).join('');
   $('chartTitle').textContent=`${VIEW.length.toLocaleString('en')} proteins in the current view`;
-  $('count').innerHTML=activeFilters().length?`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins match · click a row to open`:`<span class="mono">${DATA.length.toLocaleString('en')}</span> proteins · click a heading to sort, a row to open`;
+  const sortTxt='sorted by '+SORT.map(({k,d})=>LABEL(k)+(d<0?' ▾':' ▴')).join(', then ')+(SORT.length>1?'':' <span class="hint">(shift-click a heading to add a level)</span>');
+  $('count').innerHTML=(activeFilters().length?`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins match`:`<span class="mono">${DATA.length.toLocaleString('en')}</span> proteins`)+' · '+sortTxt;
   const TIP=Object.fromEntries(CRITS.map(c=>[c[0],c[2]+'. '+c[3]]));TIP.score_total='Sum of the six criteria, 0 to 12, equal weight.';TIP.copies_per_cell_U2OS='Copies per cell in U2-OS, Beck et al. 2011.';TIP.em_structures='Structures the protein is annotated on, from HPA and UniProt. Dashed means a broad class.';
-  const g1=`<tr class="grp"><th colspan="2"></th>${GROUPS.map(g=>`<th colspan="${Math.max(1,g.crits.length)}" class="g ${g.k} ${sortKey==='_g_'+g.k?('sorted '+(sortDir<0?'desc':'asc')):''}" ${g.crits.length?`data-k="_g_${g.k}"`:''} title="${esc(g.ask+' '+g.data+(g.crits.length?' Click to sort by this subtotal.':''))}">${g.label}</th>`).join('')}<th colspan="2"></th></tr>`;
-  const g2=`<tr>${COLS.map(([k,l])=>k==='_img'?`<th class="c img" title="${esc(GROUPS[3].data)}">${l}</th>`:`<th data-k="${k}" title="${esc(TIP[k]||'')}" class="${CENTER.has(k)?'c hasf':(NUM.has(k)?'num':'')} ${k===sortKey?('sorted '+(sortDir<0?'desc':'asc')):''}">${CENTER.has(k)?`<button class="fbtn ${S.crit[k]?'on':''}" data-f="${k}" title="Filter this column" aria-label="Filter ${CRIT[k][2]}"><svg viewBox="0 0 10 10"><path d="M0 0h10L6 5v4L4 10V5z"/></svg></button>`:''}${l}</th>`).join('')}</tr>`;
+  const g1=`<tr class="grp"><th colspan="2"></th>${GROUPS.map(g=>`<th colspan="${Math.max(1,g.crits.length)}" class="g ${g.k} ${sortIdx('_g_'+g.k)>=0?('sorted '+(SORT[sortIdx('_g_'+g.k)].d<0?'desc':'asc')):''}" data-n="${sortIdx('_g_'+g.k)+1}" ${g.crits.length?`data-k="_g_${g.k}"`:''} title="${esc(g.ask+' '+g.data+(g.crits.length?' Click to sort by this subtotal.':''))}">${g.label}${sortIdx('_g_'+g.k)>=0&&SORT.length>1?`<span class="lvl">${sortIdx('_g_'+g.k)+1}</span>`:''}</th>`).join('')}<th colspan="2"></th></tr>`;
+  const g2=`<tr>${COLS.map(([k,l])=>k==='_img'?`<th class="c img" title="${esc(GROUPS[3].data)}">${l}</th>`:`<th data-k="${k}" title="${esc(TIP[k]||'')}" class="${CENTER.has(k)?'c hasf':(NUM.has(k)?'num':'')} ${sortIdx(k)>=0?('sorted '+(SORT[sortIdx(k)].d<0?'desc':'asc')):''}" data-n="${sortIdx(k)+1}">${CENTER.has(k)?`<button class="fbtn ${S.crit[k]?'on':''}" data-f="${k}" title="Filter this column" aria-label="Filter ${CRIT[k][2]}"><svg viewBox="0 0 10 10"><path d="M0 0h10L6 5v4L4 10V5z"/></svg></button>`:''}${l}${sortIdx(k)>=0&&SORT.length>1?`<span class="lvl">${sortIdx(k)+1}</span>`:''}</th>`).join('')}</tr>`;
   $('thead').innerHTML=g1+g2;
   $('tbody').innerHTML='';shown=0;$('scroll').scrollTop=0;more()}
 function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g" title="${esc(r.gene_name)}">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>`<td class="c ${g.k}">${mark(r[k])}</td>`):[`<td class="c img">–</td>`]).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
 $('scroll').addEventListener('scroll',e=>{const s=e.target;if(s.scrollTop+s.clientHeight>s.scrollHeight-600&&shown<VIEW.length)more()});
-$('thead').addEventListener('click',e=>{const fb=e.target.closest('.fbtn');if(fb){e.stopPropagation();openPop(fb);return}const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=NUM.has(k)?-1:1}sortView();render()});
+$('thead').addEventListener('click',e=>{const fb=e.target.closest('.fbtn');if(fb){e.stopPropagation();openPop(fb);return}const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;const i=sortIdx(k);const def=NUM.has(k)?-1:1;
+  if(e.shiftKey){if(i>=0)SORT[i].d*=-1;else SORT.push({k,d:def})}else{if(i>=0&&SORT.length===1)SORT[0].d*=-1;else SORT=[{k,d:def}]}
+  sortView();render()});
 function openPop(fb){const k=fb.dataset.f;const c=CRIT[k];const pop=$('pop');const v=S.crit[k]||0;
   pop.innerHTML=`<h6>${c[2]}</h6><div class="q">${esc(c[3])}</div><span class="seg">${[[0,'any'],[1,'≥1'],[2,'2']].map(([n,l])=>`<b data-v="${n}" class="${n===v?'on':''}">${l}</b>`).join('')}</span>`;
   pop.hidden=false;const r=fb.getBoundingClientRect();pop.style.left=Math.min(r.left,window.innerWidth-pop.offsetWidth-12)+'px';pop.style.top=(r.bottom+6)+'px';
