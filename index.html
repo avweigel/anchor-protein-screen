@@ -134,9 +134,6 @@
 
   th:hover{color:var(--ink)}
   th.sorted{color:var(--accent-ink)}
-  th.sorted::after{content:"";display:inline-block;width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;margin-left:5px;vertical-align:1px}
-  th.sorted.desc::after{border-top:4px solid currentColor}
-  th.sorted.asc::after{border-bottom:4px solid currentColor}
   th.num,td.num{text-align:right}
   th.c,td.c{text-align:center;padding-left:3px;padding-right:3px}
   th.c{font-size:10px;letter-spacing:.05em}
@@ -214,6 +211,55 @@
   .sc .why{grid-column:1/3;font-size:11.5px;color:var(--ink-2);margin:0 0 9px;line-height:1.45;white-space:normal}
   .sc .why em{font-style:normal;color:var(--ink-3)}
 
+
+  /* filters panel */
+  .ftop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .ftop h3{margin:0}
+  .clear{font-size:11.5px;color:var(--accent-ink);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0}
+  .fhint{font-size:11px;color:var(--ink-3);margin:-4px 0 6px;line-height:1.4}
+  .cprange{display:flex;align-items:center;gap:6px}
+  .cprange input{flex:1;min-width:0;font:inherit;font-family:var(--font-mono);font-size:11.5px;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--panel-2);outline:none}
+  .cprange input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint);background:var(--panel)}
+  .cprange input::placeholder{color:var(--ink-3)}
+  .cprange span{font-size:11px;color:var(--ink-3)}
+  /* active filter chips */
+  .chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:0 2px;flex:none}
+  .chips .lbl{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-right:2px}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent-ink);background:var(--accent-tint);border:1px solid var(--accent-soft);border-radius:999px;padding:3px 6px 3px 10px;line-height:1.3}
+  .chip b{font-weight:600}
+  .chip button{border:none;background:transparent;color:var(--accent-ink);cursor:pointer;font-size:14px;line-height:1;padding:0 3px;border-radius:50%;opacity:.7}
+  .chip button:hover{opacity:1;background:var(--accent-soft)}
+  .chips .clear{margin-left:4px}
+  /* sort affordance */
+  tr:not(.grp) th[data-k]{padding-right:16px;position:sticky}
+  tr:not(.grp) th[data-k]::after{content:"";position:absolute;right:5px;top:50%;margin-top:-5px;width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;border-bottom:4px solid var(--line);opacity:1}
+  tr:not(.grp) th[data-k]::before{content:"";position:absolute;right:5px;top:50%;margin-top:1px;width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;border-top:4px solid var(--line)}
+  tr:not(.grp) th[data-k]:hover::after,tr:not(.grp) th[data-k]:hover::before{border-bottom-color:var(--ink-3);border-top-color:var(--ink-3)}
+  tr:not(.grp) th[data-k].sorted.asc::after{border-bottom-color:var(--accent)}
+  tr:not(.grp) th[data-k].sorted.desc::before{border-top-color:var(--accent)}
+  th.sorted::after{margin-left:0}
+  th.c[data-k]{padding-right:14px}
+  thead tr.grp th.g{cursor:pointer;position:sticky;padding-right:6px}
+  thead tr.grp th.g:hover{color:var(--accent)}
+  thead tr.grp th.g.sorted{color:var(--accent);border-bottom-color:var(--accent)}
+  thead tr.grp th.g.sorted::after{content:" ▾";font-size:9px}
+  thead tr.grp th.g.sorted.asc::after{content:" ▴"}
+  thead tr.grp th.imageable{cursor:default}
+  /* funnel */
+  .fbtn{position:absolute;left:1px;top:50%;transform:translateY(-50%);width:14px;height:14px;border:none;background:transparent;padding:0;cursor:pointer;color:var(--line);display:inline-flex;align-items:center;justify-content:center;border-radius:3px}
+  .fbtn svg{width:10px;height:10px;fill:currentColor}
+  .fbtn{opacity:0}
+  th:hover .fbtn{opacity:1;color:var(--ink-3)}
+  .fbtn.on,th:hover .fbtn.on{opacity:1;color:var(--accent)}
+  .fbtn:hover{background:var(--accent-tint);color:var(--accent-ink)}
+  th.c.hasf{padding-left:14px}
+  .pop{position:fixed;z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 12px 30px -10px rgba(0,0,0,.35);padding:10px 12px;width:260px;font-size:12px;color:var(--ink)}
+  .pop h6{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;margin-bottom:6px}
+  .pop .q{color:var(--ink-2);margin-bottom:8px;line-height:1.4}
+  .pop .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel-2)}
+  .pop .seg b{font-family:var(--font-mono);font-weight:500;padding:4px 10px;cursor:pointer;font-size:11px;color:var(--ink-3);border-right:1px solid var(--line)}
+  .pop .seg b:last-child{border-right:none}
+  .pop .seg b.on{background:var(--accent);color:#fff}
   /* Modals */
   .modal{position:fixed;inset:0;background:rgba(8,30,34,.45);display:none;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(2px)}
   .modal.open{display:flex}
@@ -232,7 +278,7 @@
   .loading{grid-column:2/4;display:flex;align-items:center;justify-content:center;color:var(--ink-3)}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  @media (max-width:1500px){td.st{max-width:122px}td.g{max-width:92px}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:.02em;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.03em}th.img{font-size:9.5px}}
+  @media (max-width:1500px){td.st{max-width:90px}td.g{max-width:72px}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:.02em;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.02em}th.img{font-size:9.5px}tr:not(.grp) th.c[data-k]{padding-right:10px}th.c.hasf{padding-left:11px}tr:not(.grp) th[data-k]::after,tr:not(.grp) th[data-k]::before{right:2px}.fbtn{left:0}tr:not(.grp) th.num[data-k]{padding-right:12px;font-size:9.5px;letter-spacing:.03em}td.st{max-width:92px;font-size:12px;color:var(--ink-2)}td.st .pill{display:inline;border:none;background:none;padding:0;margin:0;font-size:12px;color:inherit}td.st .pill.part{color:var(--ink-3)}td.st .pill+.pill::before{content:", "}td.st .pill.more{color:var(--ink-3)}td.st .pill.more::before{content:" "}}
   @media (max-width:1300px){.app{grid-template-columns:230px 1fr 310px}header .sub{display:none}}
   @media (max-width:1100px){.app{grid-template-columns:218px 1fr}.detail{position:fixed;top:60px;right:0;bottom:0;width:min(372px,90vw);box-shadow:-6px 0 24px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
   .detail .closeD{display:none;float:right;font-size:20px;border:none;background:none;color:var(--ink-3);cursor:pointer;line-height:1}
@@ -252,22 +298,22 @@
   </header>
 
   <aside>
-    <h3>Search</h3>
+    <div class="ftop"><h3>Filters</h3><button class="clear" id="reset" hidden>Clear all</button></div>
     <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" id="q" placeholder="Gene name or UniProt ID"></div>
     <h3>Compartment family</h3>
     <div id="fams"></div>
-    <h3>Quick filters</h3>
-    <label class="chk"><input type="checkbox" id="f-expr"> Expressed in U2-OS (nTPM ≥ 1)</label>
-    <label class="chk"><input type="checkbox" id="f-tag"> Has a tagged line (OpenCell or Allen)</label>
-    <label class="chk"><input type="checkbox" id="f-copy"> Copy number known (Beck 2011)</label>
-    <label class="chk"><input type="checkbox" id="f-nothpa"> Not in HPA, or no HPA IF data</label>
-    <label class="chk"><input type="checkbox" id="f-tm"> Transmembrane</label>
-    <h3>Minimum per criterion</h3>
+    <h3>Score at least</h3>
+    <p class="fhint">Per dataset column, under its must-have.</p>
     <div id="crits"></div>
-    <h3>Minimum total score</h3>
+    <h3>Copies per cell</h3>
+    <p class="fhint">Beck 2011, U2-OS. Enough to count, not saturating.</p>
+    <div class="cprange"><input type="text" id="cmin" inputmode="decimal" placeholder="min, e.g. 1000"><span>to</span><input type="text" id="cmax" inputmode="decimal" placeholder="max, e.g. 1e6"></div>
+    <h3>Total score at least</h3>
     <div class="range"><input type="range" id="minTotal" min="0" max="12" value="0"></div>
     <div class="mini"><span>0</span><b id="minTotalLbl">any</b><span>12</span></div>
-    <button class="reset" id="reset">Reset all filters</button>
+    <h3>Other</h3>
+    <label class="chk"><input type="checkbox" id="f-nothpa"> Not in HPA, or no HPA IF data</label>
+    <label class="chk"><input type="checkbox" id="f-tm"> Transmembrane</label>
   </aside>
 
   <main>
@@ -276,12 +322,14 @@
       <div class="bars" id="bars"></div>
     </div>
     <div class="key" id="key"></div>
+    <div class="chips" id="chips" hidden></div>
     <div class="tbl">
       <div class="scroll" id="scroll"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
       <div class="foot"><span id="count"></span><span>A low score is something to weigh, not a reason to drop a protein. <button data-modal="m-score">How it works</button></span></div>
     </div>
   </main>
 
+  <div class="pop" id="pop" hidden></div>
   <section class="detail" id="detail">
     <div class="empty intro" id="intro"></div>
   </section>
@@ -341,7 +389,9 @@ const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMa
 const NUM=new Set(['score_total','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
 const CENTER=new Set(CRITS.map(c=>c[0]));
 let DATA=[],BASE=[],VIEW=[],sel=null,sortKey='score_total',sortDir=-1,shown=0;
-const S={q:'',fams:new Set(),expr:false,tag:false,copy:false,nothpa:false,tm:false,minTotal:0,crit:{}};
+const S0=()=>({q:'',fams:new Set(),nothpa:false,tm:false,minTotal:0,crit:{},cmin:null,cmax:null});
+let S=S0();
+GROUPS.forEach(g=>{if(g.crits.length)NUM.add('_g_'+g.k)});
 const $=id=>document.getElementById(id);
 const fmtCopies=r=>{const b=/^[<>]/.test(r.copies_raw||'')?r.copies_raw[0]:'';return b+fmtNum(r.copies_per_cell_U2OS)};
 const fmtNum=v=>{if(v===''||v==null)return '';const n=+v;if(isNaN(n))return v;if(n>=1e5)return n.toExponential(1);if(n>=1000)return Math.round(n).toLocaleString('en');return (Math.round(n*10)/10).toString()};
@@ -350,23 +400,43 @@ const strip=t=>`<b class="tnum">${t}</b>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const PARTIAL=new Set(['chromosome (broad)','cytoskeleton (broad)','vesicle (unspecified)','cell projection']);
 
-function parseTSV(t){const lines=t.replace(/\r/g,'').split('\n');const h=lines[0].split('\t');const out=[];for(let i=1;i<lines.length;i++){if(!lines[i])continue;const c=lines[i].split('\t');const o={};for(let j=0;j<h.length;j++)o[h[j]]=c[j]??'';o.fams=o.compartment_family?o.compartment_family.split(';'):['no location'];o.structs=o.em_structures?o.em_structures.split(';'):[];o.copies_raw=o.copies_per_cell_U2OS;for(const k of NUM){const v=o[k];o[k]=v===''?null:parseFloat(String(v).replace(/^[<>~]/,''))}o._q=(o.gene_name+' '+o.uniprot).toLowerCase();out.push(o)}return out}
+function parseTSV(t){const lines=t.replace(/\r/g,'').split('\n');const h=lines[0].split('\t');const out=[];for(let i=1;i<lines.length;i++){if(!lines[i])continue;const c=lines[i].split('\t');const o={};for(let j=0;j<h.length;j++)o[h[j]]=c[j]??'';o.fams=o.compartment_family?o.compartment_family.split(';'):['no location'];o.structs=o.em_structures?o.em_structures.split(';'):[];o.copies_raw=o.copies_per_cell_U2OS;for(const k of NUM){const v=o[k];o[k]=v===''?null:parseFloat(String(v).replace(/^[<>~]/,''))}o._q=(o.gene_name+' '+o.uniprot).toLowerCase();for(const g of GROUPS)if(g.crits.length)o['_g_'+g.k]=g.crits.reduce((a,k)=>a+(o[k]||0),0);out.push(o)}return out}
 
 function apply(){
   const q=S.q.trim().toLowerCase();
   const base=r=>{
     if(q&&!r._q.includes(q))return false;
-    if(S.expr&&!(r.u2os_ntpm>=1))return false;
-    if(S.tag&&!r.tag_lines)return false;
-    if(S.copy&&r.copies_per_cell_U2OS==null)return false;
     if(S.nothpa&&r.source==='UniProt+HPA')return false;
     if(S.tm&&r.transmembrane!=='yes')return false;
     if(r.score_total<S.minTotal)return false;
     for(const k in S.crit)if(r[k]<S.crit[k])return false;
+    if(S.cmin!=null||S.cmax!=null){const c=r.copies_per_cell_U2OS;if(c==null)return false;if(S.cmin!=null&&c<S.cmin)return false;if(S.cmax!=null&&c>S.cmax)return false}
     return true};
   BASE=DATA.filter(base);
   VIEW=S.fams.size?BASE.filter(r=>r.fams.some(f=>S.fams.has(f))):BASE;
-  sortView();render()}
+  sortView();syncSidebar();renderChips();render()}
+function activeFilters(){
+  const a=[];
+  if(S.q.trim())a.push({t:`name <b>${esc(S.q.trim())}</b>`,off:()=>{S.q=''}});
+  for(const f of S.fams)a.push({t:`<b>${esc(FAMLBL[f]||f)}</b>`,off:()=>S.fams.delete(f)});
+  for(const k in S.crit)a.push({t:`${CRIT[k][2]} ${S.crit[k]===2?'= 2':'≥ 1'}`,off:()=>{delete S.crit[k]}});
+  if(S.minTotal)a.push({t:`Total ≥ <b>${S.minTotal}</b>`,off:()=>{S.minTotal=0}});
+  if(S.cmin!=null||S.cmax!=null)a.push({t:`Copies/cell ${S.cmin!=null?'≥ '+fmtNum(S.cmin):''}${S.cmin!=null&&S.cmax!=null?' and ':''}${S.cmax!=null?'≤ '+fmtNum(S.cmax):''}`,off:()=>{S.cmin=null;S.cmax=null;$('cmin').value='';$('cmax').value=''}});
+  if(S.nothpa)a.push({t:'Not in HPA, or no IF data',off:()=>{S.nothpa=false}});
+  if(S.tm)a.push({t:'Transmembrane',off:()=>{S.tm=false}});
+  return a}
+function renderChips(){
+  const a=activeFilters();const el=$('chips');el.hidden=!a.length;$('reset').hidden=!a.length;
+  if(!a.length){el.innerHTML='';return}
+  el.innerHTML=`<span class="lbl">Showing</span>`+a.map((f,i)=>`<span class="chip">${f.t}<button data-i="${i}" title="Remove this filter" aria-label="Remove filter">×</button></span>`).join('')+`<button class="clear" id="clear2">Clear all</button>`;
+  el.querySelectorAll('.chip button').forEach(b=>b.addEventListener('click',()=>{a[+b.dataset.i].off();apply()}));
+  $('clear2').addEventListener('click',resetAll)}
+function syncSidebar(){
+  document.querySelectorAll('.fam').forEach(d=>d.classList.toggle('on',S.fams.has(d.dataset.f)));
+  document.querySelectorAll('.crit').forEach(c=>{const v=S.crit[c.dataset.k]||0;c.querySelectorAll('b').forEach(b=>b.classList.toggle('on',+b.dataset.v===v))});
+  $('minTotal').value=S.minTotal;$('minTotalLbl').textContent=S.minTotal?S.minTotal+' and up':'any';
+  $('f-nothpa').checked=S.nothpa;$('f-tm').checked=S.tm;if($('q').value!==S.q)$('q').value=S.q}
+function resetAll(){S=S0();$('cmin').value='';$('cmax').value='';apply()}
 function sortView(){const k=sortKey,d=sortDir;VIEW.sort((a,b)=>{let x=a[k],y=b[k];if(NUM.has(k)){x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*d||a.gene_name.localeCompare(b.gene_name)}return String(x).localeCompare(String(y))*d||a.gene_name.localeCompare(b.gene_name)})}
 
 function render(){
@@ -376,15 +446,21 @@ function render(){
   const hist=new Array(13).fill(0);for(const r of VIEW)hist[r.score_total]++;const mx=Math.max(1,...hist);
   $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''} ${S.minTotal&&i===S.minTotal?'cut':''}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?n.toLocaleString('en'):''}</em><span>${i}</span></div>`).join('');
   $('chartTitle').textContent=`${VIEW.length.toLocaleString('en')} proteins in the current view`;
-  $('count').innerHTML=`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins · click a column to sort, a row to open`;
+  $('count').innerHTML=activeFilters().length?`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins match · click a row to open`:`<span class="mono">${DATA.length.toLocaleString('en')}</span> proteins · click a heading to sort, a row to open`;
   const TIP=Object.fromEntries(CRITS.map(c=>[c[0],c[2]+'. '+c[3]]));TIP.score_total='Sum of the six criteria, 0 to 12, equal weight.';TIP.copies_per_cell_U2OS='Copies per cell in U2-OS, Beck et al. 2011.';TIP.em_structures='Structures the protein is annotated on, from HPA and UniProt. Dashed means a broad class.';
-  const g1=`<tr class="grp"><th colspan="2"></th>${GROUPS.map(g=>`<th colspan="${Math.max(1,g.crits.length)}" class="g ${g.k}" title="${esc(g.ask+' '+g.data)}">${g.label}</th>`).join('')}<th colspan="2"></th></tr>`;
-  const g2=`<tr>${COLS.map(([k,l])=>k==='_img'?`<th class="c img" title="${esc(GROUPS[3].data)}">${l}</th>`:`<th data-k="${k}" title="${esc(TIP[k]||'')}" class="${CENTER.has(k)?'c':(NUM.has(k)?'num':'')} ${k===sortKey?('sorted '+(sortDir<0?'desc':'asc')):''}">${l}</th>`).join('')}</tr>`;
+  const g1=`<tr class="grp"><th colspan="2"></th>${GROUPS.map(g=>`<th colspan="${Math.max(1,g.crits.length)}" class="g ${g.k} ${sortKey==='_g_'+g.k?('sorted '+(sortDir<0?'desc':'asc')):''}" ${g.crits.length?`data-k="_g_${g.k}"`:''} title="${esc(g.ask+' '+g.data+(g.crits.length?' Click to sort by this subtotal.':''))}">${g.label}</th>`).join('')}<th colspan="2"></th></tr>`;
+  const g2=`<tr>${COLS.map(([k,l])=>k==='_img'?`<th class="c img" title="${esc(GROUPS[3].data)}">${l}</th>`:`<th data-k="${k}" title="${esc(TIP[k]||'')}" class="${CENTER.has(k)?'c hasf':(NUM.has(k)?'num':'')} ${k===sortKey?('sorted '+(sortDir<0?'desc':'asc')):''}">${CENTER.has(k)?`<button class="fbtn ${S.crit[k]?'on':''}" data-f="${k}" title="Filter this column" aria-label="Filter ${CRIT[k][2]}"><svg viewBox="0 0 10 10"><path d="M0 0h10L6 5v4L4 10V5z"/></svg></button>`:''}${l}</th>`).join('')}</tr>`;
   $('thead').innerHTML=g1+g2;
   $('tbody').innerHTML='';shown=0;$('scroll').scrollTop=0;more()}
 function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g" title="${esc(r.gene_name)}">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>`<td class="c ${g.k}">${mark(r[k])}</td>`):[`<td class="c img">–</td>`]).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
 $('scroll').addEventListener('scroll',e=>{const s=e.target;if(s.scrollTop+s.clientHeight>s.scrollHeight-600&&shown<VIEW.length)more()});
-$('thead').addEventListener('click',e=>{const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=NUM.has(k)?-1:1}sortView();render()});
+$('thead').addEventListener('click',e=>{const fb=e.target.closest('.fbtn');if(fb){e.stopPropagation();openPop(fb);return}const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=NUM.has(k)?-1:1}sortView();render()});
+function openPop(fb){const k=fb.dataset.f;const c=CRIT[k];const pop=$('pop');const v=S.crit[k]||0;
+  pop.innerHTML=`<h6>${c[2]}</h6><div class="q">${esc(c[3])}</div><span class="seg">${[[0,'any'],[1,'≥1'],[2,'2']].map(([n,l])=>`<b data-v="${n}" class="${n===v?'on':''}">${l}</b>`).join('')}</span>`;
+  pop.hidden=false;const r=fb.getBoundingClientRect();pop.style.left=Math.min(r.left,window.innerWidth-pop.offsetWidth-12)+'px';pop.style.top=(r.bottom+6)+'px';
+  pop.querySelectorAll('b').forEach(b=>b.addEventListener('click',()=>{const n=+b.dataset.v;if(n)S.crit[k]=n;else delete S.crit[k];pop.hidden=true;apply()}))}
+document.addEventListener('click',e=>{const pop=$('pop');if(!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.fbtn'))pop.hidden=true});
+$('scroll').addEventListener('scroll',()=>{$('pop').hidden=true});
 $('tbody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(!tr)return;sel=VIEW[+tr.dataset.i];document.querySelectorAll('#tbody tr.sel').forEach(x=>x.classList.remove('sel'));tr.classList.add('sel');showDetail(sel)});
 
 function cleanUni(s){return s.replace(/SUBCELLULAR LOCATION:\s*/,'').replace(/\{[^}]*\}/g,'').replace(/\{[^}]*$/,'').replace(/\s*;\s*/g,'; ').replace(/\s+\./g,'.').replace(/\s{2,}/g,' ').trim()}
@@ -412,20 +488,22 @@ function showDetail(r){
       <div class="row"><span>Protein class</span><span>${esc(r.protein_class||'')}</span></div>
     </div>`}
 
-$('key').innerHTML=`<span class="hint">Headings are the proposed must-haves; each column under them is one dataset.</span><span>${mark(2)} yes</span><span>${mark(1)} in part</span><span>${mark(0)} no, or unknown</span><span class="hint">Hover a heading or column for what it asks.</span>`;
+$('key').innerHTML=`<span class="hint">Headings are the proposed must-haves; each column under them is one dataset.</span><span>${mark(2)} yes</span><span>${mark(1)} in part</span><span>${mark(0)} no, or unknown</span><span class="hint">Click a heading to sort, the funnel to filter.</span>`;
 $('intro').innerHTML=`<h2>What this is</h2><p>Anchor proteins are the handful, 5 to 10, we plan to tag in U2-OS so the same molecule can be seen by light microscopy and then found again in the EM volume of the same cell. This page is a first pass at who the candidates might be, using what public databases already say.</p><p>The five proposed must-haves, and what the data can and cannot answer:</p><dl>${GROUPS.map(g=>`<dt>${g.label}</dt><dd><span class="ask">${esc(g.ask)}</span> ${esc(g.data)}</dd>`).join('')}</dl><p>Each dataset column is scored 0, 1 or 2. The total is the plain sum, 0 to 12, so Identity, with three columns, weighs more than the others. Weighting, and the final choice, is for the working group.</p><p class="next">Click a row to see where its scores come from, with links to the sources.</p>`;
 $('fams').innerHTML=FAMS.map(f=>`<div class="fam" data-f="${f}"><span><i class="sw"></i>${FAMLBL[f]}</span><small></small></div>`).join('');
-$('fams').addEventListener('click',e=>{const d=e.target.closest('.fam');if(!d)return;const f=d.dataset.f;if(S.fams.has(f))S.fams.delete(f);else S.fams.add(f);d.classList.toggle('on');apply()});
+$('fams').addEventListener('click',e=>{const d=e.target.closest('.fam');if(!d)return;const f=d.dataset.f;if(S.fams.has(f))S.fams.delete(f);else S.fams.add(f);apply()});
 $('crits').innerHTML=GROUPS.filter(g=>g.crits.length).map(g=>`<div class="critg">${g.label}</div>`+g.crits.map(k=>CRIT[k]).map(c=>`<div class="crit" data-k="${c[0]}" title="${esc(c[3])}"><span>${c[2]}</span><span class="seg"><b data-v="0" class="on">any</b><b data-v="1">≥1</b><b data-v="2">2</b></span></div>`).join('')).join('');
-$('crits').addEventListener('click',e=>{const b=e.target.closest('b');if(!b)return;const k=b.closest('.crit').dataset.k;const v=+b.dataset.v;b.parentElement.querySelectorAll('b').forEach(x=>x.classList.toggle('on',x===b));if(v)S.crit[k]=v;else delete S.crit[k];apply()});
+$('crits').addEventListener('click',e=>{const b=e.target.closest('b');if(!b)return;const k=b.closest('.crit').dataset.k;const v=+b.dataset.v;if(v)S.crit[k]=v;else delete S.crit[k];apply()});
 $('q').addEventListener('input',e=>{S.q=e.target.value;apply()});
-for(const [id,k] of [['f-expr','expr'],['f-tag','tag'],['f-copy','copy'],['f-nothpa','nothpa'],['f-tm','tm']])$(id).addEventListener('change',e=>{S[k]=e.target.checked;apply()});
-$('minTotal').addEventListener('input',e=>{S.minTotal=+e.target.value;$('minTotalLbl').textContent=S.minTotal?S.minTotal+' and up':'any';apply()});
-$('reset').addEventListener('click',()=>{S.q='';$('q').value='';S.fams.clear();document.querySelectorAll('.fam.on').forEach(x=>x.classList.remove('on'));for(const [id,k] of [['f-expr','expr'],['f-tag','tag'],['f-copy','copy'],['f-nothpa','nothpa'],['f-tm','tm']]){S[k]=false;$(id).checked=false}S.minTotal=0;$('minTotal').value=0;$('minTotalLbl').textContent='any';S.crit={};document.querySelectorAll('.crit b').forEach(b=>b.classList.toggle('on',b.dataset.v==='0'));apply()});
+for(const [id,k] of [['f-nothpa','nothpa'],['f-tm','tm']])$(id).addEventListener('change',e=>{S[k]=e.target.checked;apply()});
+$('minTotal').addEventListener('input',e=>{S.minTotal=+e.target.value;apply()});
+const parseCopies=v=>{v=String(v).trim().replace(/[,\s]/g,'');if(!v)return null;const n=Number(v);return isFinite(n)?n:null};
+for(const [id,k] of [['cmin','cmin'],['cmax','cmax']])$(id).addEventListener('change',e=>{S[k]=parseCopies(e.target.value);apply()});
+$('reset').addEventListener('click',resetAll);
 document.querySelectorAll('[data-modal]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.modal).classList.add('open')));
 document.querySelectorAll('.modal').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('close'))m.classList.remove('open')})});
 $('theme').addEventListener('click',()=>{const root=document.documentElement;const sysDark=matchMedia('(prefers-color-scheme: dark)').matches;const cur=root.dataset.theme||(sysDark?'dark':'light');const next=cur==='dark'?'light':'dark';root.dataset.theme=next;try{localStorage.setItem('theme',next)}catch(e){}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'))});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'));$('pop').hidden=true}});
 $('dl').addEventListener('click',()=>{const keys=Object.keys(DATA[0]).filter(k=>!k.startsWith('_')&&k!=='fams'&&k!=='structs');const lines=[keys.join('\t'),...VIEW.map(r=>keys.map(k=>r[k]??'').join('\t'))];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/tab-separated-values'}));a.download='anchor_scores_filtered.tsv';a.click()});
 
 fetch('anchor_scores.tsv').then(r=>r.text()).then(t=>{DATA=parseTSV(t);$('subtitle').textContent=`Every human protein, scored against the five proposed must-haves.`;apply()}).catch(e=>{$('subtitle').textContent='Could not load anchor_scores.tsv';console.error(e)});
