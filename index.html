@@ -148,18 +148,19 @@
   tbody tr:hover td{background:var(--panel-2)}
   tr.sel td{background:var(--accent-tint)}
   tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
-  td.g{font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--ink);letter-spacing:.01em}
+  td.g{font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--ink);letter-spacing:.01em;max-width:104px;overflow:hidden;text-overflow:ellipsis}
   /* score marks: a two-step bar per criterion */
-  .m{display:inline-flex;gap:2px;vertical-align:middle}
-  .m i{display:block;width:10px;height:14px;border-radius:2px;background:var(--empty)}
-  .m.v2 i{background:var(--accent)}
-  .m.v1 i:first-child{background:var(--accent);opacity:.45}
+  .m{display:inline-flex;align-items:center;justify-content:center;width:22px;height:20px;border-radius:5px;font-family:var(--font-mono);font-size:12px;font-weight:600;vertical-align:middle;border:1px solid transparent;font-variant-numeric:tabular-nums}
+  .m.v0{color:var(--ink-3);border-color:var(--line);background:transparent;font-weight:400}
+  .m.v1{color:var(--accent-ink);background:var(--accent-soft)}
+  .m.v2{color:#fff;background:var(--accent)}
   /* total: 12-step strip + number */
   .tot{display:inline-flex;align-items:center;gap:8px;justify-content:flex-end}
   .tot .strip{display:inline-flex;gap:1.5px}
   .tot .strip i{display:block;width:3.5px;height:14px;background:var(--empty);border-radius:1px}
   .tot .strip i.f{background:var(--accent)}
   .tot b{font-family:var(--font-mono);font-weight:600;color:var(--accent-ink);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
+  .tnum{font-family:var(--font-mono);font-weight:600;font-size:13.5px;color:var(--accent-ink);font-variant-numeric:tabular-nums}
   .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink-2);margin-right:4px;line-height:1.4}
   .pill.part{background:transparent;border-style:dashed;color:var(--ink-3)}
   .pill.more{background:transparent;border-color:transparent;color:var(--ink-3);font-family:var(--font-mono);padding-left:2px}
@@ -231,7 +232,7 @@
   .loading{grid-column:2/4;display:flex;align-items:center;justify-content:center;color:var(--ink-3)}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  @media (max-width:1500px){td.st{max-width:135px}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:.02em;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.03em}th.img{font-size:9.5px}}
+  @media (max-width:1500px){td.st{max-width:122px}td.g{max-width:92px}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:.02em;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.03em}th.img{font-size:9.5px}}
   @media (max-width:1300px){.app{grid-template-columns:230px 1fr 310px}header .sub{display:none}}
   @media (max-width:1100px){.app{grid-template-columns:218px 1fr}.detail{position:fixed;top:60px;right:0;bottom:0;width:min(372px,90vw);box-shadow:-6px 0 24px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
   .detail .closeD{display:none;float:right;font-size:20px;border:none;background:none;color:var(--ink-3);cursor:pointer;line-height:1}
@@ -344,8 +345,8 @@ const S={q:'',fams:new Set(),expr:false,tag:false,copy:false,nothpa:false,tm:fal
 const $=id=>document.getElementById(id);
 const fmtCopies=r=>{const b=/^[<>]/.test(r.copies_raw||'')?r.copies_raw[0]:'';return b+fmtNum(r.copies_per_cell_U2OS)};
 const fmtNum=v=>{if(v===''||v==null)return '';const n=+v;if(isNaN(n))return v;if(n>=1e5)return n.toExponential(1);if(n>=1000)return Math.round(n).toLocaleString('en');return (Math.round(n*10)/10).toString()};
-const mark=v=>`<span class="m v${v||0}" title="${v} of 2"><i></i><i></i></span>`;
-const strip=t=>`<span class="tot"><span class="strip">${Array.from({length:12},(_,i)=>`<i class="${i<t?'f':''}"></i>`).join('')}</span><b>${t}</b></span>`;
+const mark=v=>`<span class="m v${v||0}" title="${v} of 2">${v??0}</span>`;
+const strip=t=>`<b class="tnum">${t}</b>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const PARTIAL=new Set(['chromosome (broad)','cytoskeleton (broad)','vesicle (unspecified)','cell projection']);
 
@@ -381,7 +382,7 @@ function render(){
   const g2=`<tr>${COLS.map(([k,l])=>k==='_img'?`<th class="c img" title="${esc(GROUPS[3].data)}">${l}</th>`:`<th data-k="${k}" title="${esc(TIP[k]||'')}" class="${CENTER.has(k)?'c':(NUM.has(k)?'num':'')} ${k===sortKey?('sorted '+(sortDir<0?'desc':'asc')):''}">${l}</th>`).join('')}</tr>`;
   $('thead').innerHTML=g1+g2;
   $('tbody').innerHTML='';shown=0;$('scroll').scrollTop=0;more()}
-function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>`<td class="c ${g.k}">${mark(r[k])}</td>`):[`<td class="c img">–</td>`]).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
+function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g" title="${esc(r.gene_name)}">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>`<td class="c ${g.k}">${mark(r[k])}</td>`):[`<td class="c img">–</td>`]).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
 $('scroll').addEventListener('scroll',e=>{const s=e.target;if(s.scrollTop+s.clientHeight>s.scrollHeight-600&&shown<VIEW.length)more()});
 $('thead').addEventListener('click',e=>{const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=NUM.has(k)?-1:1}sortView();render()});
 $('tbody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(!tr)return;sel=VIEW[+tr.dataset.i];document.querySelectorAll('#tbody tr.sel').forEach(x=>x.classList.remove('sel'));tr.classList.add('sel');showDetail(sel)});
@@ -400,7 +401,7 @@ function showDetail(r){
     <div class="acc">${esc(r.uniprot||'')}${r.ensembl?' · '+esc(r.ensembl):''}</div>
     <div class="fams">${r.fams.map(f=>`<span>${esc(FAMLBL[f]||f)}</span>`).join('')}</div>
     <div class="links">${hpaUrl?`<a href="${hpaUrl}" target="_blank" rel="noopener">HPA</a>`:''}${r.uniprot?`<a href="https://www.uniprot.org/uniprotkb/${r.uniprot}/entry" target="_blank" rel="noopener">UniProt</a>`:''}${r.tag_lines.includes('OpenCell')?`<a href="https://opencell.sf.czbiohub.org/search?query=${r.gene_name}" target="_blank" rel="noopener">OpenCell</a>`:''}<a href="https://depmap.org/portal/gene/${r.gene_name}?tab=overview" target="_blank" rel="noopener">DepMap</a></div>
-    <div class="card"><h5>Score <b>${r.score_total} / 12</b></h5>${GROUPS.map(g=>`<div class="grp"><div class="gh"><span>${g.label}</span>${g.crits.length?`<b>${g.crits.reduce((a,k)=>a+(r[k]||0),0)} / ${g.crits.length*2}</b>`:'<b class="na">not scored</b>'}</div>${g.crits.length?`<div class="sc">${g.crits.map(k=>CRIT[k]).map(c=>`<span class="nm">${c[2]}</span><span class="val">${mark(r[c[0]])}<b>${r[c[0]]}</b></span><div class="why">${why[c[0]]}</div>`).join('')}</div>`:`<div class="why na">${esc(g.data)}</div>`}</div>`).join('')}</div>
+    <div class="card"><h5>Score <b>${r.score_total} / 12</b></h5>${GROUPS.map(g=>`<div class="grp"><div class="gh"><span>${g.label}</span>${g.crits.length?`<b>${g.crits.reduce((a,k)=>a+(r[k]||0),0)} / ${g.crits.length*2}</b>`:'<b class="na">not scored</b>'}</div>${g.crits.length?`<div class="sc">${g.crits.map(k=>CRIT[k]).map(c=>`<span class="nm">${c[2]}</span><span class="val">${mark(r[c[0]])}</span><div class="why">${why[c[0]]}</div>`).join('')}</div>`:`<div class="why na">${esc(g.data)}</div>`}</div>`).join('')}</div>
     <div class="card"><h5>Structures</h5><div>${r.structs.length?r.structs.map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join(''):'<span class="pill part">none mapped</span>'}</div></div>
     <div class="card"><h5>Other facts</h5>
       <div class="row"><span>Source</span><span>${esc(r.source)}</span></div>
@@ -411,7 +412,7 @@ function showDetail(r){
       <div class="row"><span>Protein class</span><span>${esc(r.protein_class||'')}</span></div>
     </div>`}
 
-$('key').innerHTML=`<span class="hint">The five headings are the proposed must-haves. Under each, one column per dataset, scored</span><span>${mark(2)}<b>2</b></span><span>${mark(1)}<b>1</b></span><span>${mark(0)}<b>0</b></span><span class="hint">Hover a heading or a column for what the number means. Imageable has no dataset behind it.</span>`;
+$('key').innerHTML=`<span class="hint">Headings are the proposed must-haves; each column under them is one dataset.</span><span>${mark(2)} yes</span><span>${mark(1)} in part</span><span>${mark(0)} no, or unknown</span><span class="hint">Hover a heading or column for what it asks.</span>`;
 $('intro').innerHTML=`<h2>What this is</h2><p>Anchor proteins are the handful, 5 to 10, we plan to tag in U2-OS so the same molecule can be seen by light microscopy and then found again in the EM volume of the same cell. This page is a first pass at who the candidates might be, using what public databases already say.</p><p>The five proposed must-haves, and what the data can and cannot answer:</p><dl>${GROUPS.map(g=>`<dt>${g.label}</dt><dd><span class="ask">${esc(g.ask)}</span> ${esc(g.data)}</dd>`).join('')}</dl><p>Each dataset column is scored 0, 1 or 2. The total is the plain sum, 0 to 12, so Identity, with three columns, weighs more than the others. Weighting, and the final choice, is for the working group.</p><p class="next">Click a row to see where its scores come from, with links to the sources.</p>`;
 $('fams').innerHTML=FAMS.map(f=>`<div class="fam" data-f="${f}"><span><i class="sw"></i>${FAMLBL[f]}</span><small></small></div>`).join('');
 $('fams').addEventListener('click',e=>{const d=e.target.closest('.fam');if(!d)return;const f=d.dataset.f;if(S.fams.has(f))S.fams.delete(f);else S.fams.add(f);d.classList.toggle('on');apply()});
