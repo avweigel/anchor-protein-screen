@@ -115,11 +115,23 @@
   .bar.cut::before{content:"";position:absolute;left:-3px;top:-6px;bottom:-1px;width:2px;background:var(--accent-glow);border-radius:1px}
   .bar span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3)}
   .bar em{position:absolute;top:-15px;left:-6px;right:-6px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--ink-2);font-style:normal;font-variant-numeric:tabular-nums}
+  .key{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:11.5px;color:var(--ink-2);padding:0 4px;flex:none}
+  .key .m{margin-right:5px}
+  .key b{font-weight:500;color:var(--ink)}
+  .key .hint{color:var(--ink-3)}
   .tbl{background:var(--panel);border:1px solid var(--line);border-radius:10px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
   .scroll{overflow:auto;flex:1}
   table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
   th{position:sticky;top:0;z-index:1;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);text-align:left;padding:11px 8px 9px;border-bottom:1px solid var(--line);font-weight:600;background:var(--panel);cursor:pointer;white-space:nowrap;user-select:none;transition:color .1s}
   th:first-child{padding-left:16px}
+  thead tr.grp th{top:0;height:26px;padding:8px 6px 3px;font-size:10.5px;letter-spacing:.06em;color:var(--accent-ink);text-align:center;border-bottom:none;cursor:default;font-weight:600}
+  thead tr.grp th.g{border-bottom:2px solid var(--accent-soft)}
+  thead tr.grp th.imageable{color:var(--ink-3);border-bottom-color:var(--line)}
+  thead tr:last-child th{top:26px}
+  th.img{color:var(--ink-3);font-weight:500;text-transform:none;letter-spacing:0;font-style:italic;cursor:default;font-size:10.5px}
+  td.img{color:var(--ink-3);font-family:var(--font-mono)}
+  td.c.identity,th.c.identity{}
+
   th:hover{color:var(--ink)}
   th.sorted{color:var(--accent-ink)}
   th.sorted::after{content:"";display:inline-block;width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;margin-left:5px;vertical-align:1px}
@@ -159,6 +171,13 @@
   .detail{background:var(--panel);border-left:1px solid var(--line);padding:22px 22px 28px;overflow:auto}
   .detail .empty{color:var(--ink-3);font-size:13px;line-height:1.5;margin-top:10px;max-width:28ch}
   .detail .empty b{display:block;color:var(--ink-2);font-weight:500;margin-bottom:4px}
+  .detail .intro{max-width:none;color:var(--ink-2);font-size:13px;line-height:1.55}
+  .detail .intro h2{font-family:var(--font-ui);font-size:15px;font-weight:600;color:var(--ink);letter-spacing:0;margin-bottom:8px}
+  .detail .intro p{margin:0 0 12px}
+  .detail .intro ol{margin:0 0 14px 18px;padding:0}
+  .detail .intro li{margin:0 0 7px;padding-left:2px}
+  .detail .intro li b{display:inline;color:var(--ink);font-weight:500;margin:0}
+  .detail .intro .next{border-top:1px solid var(--line);padding-top:12px;color:var(--ink-3)}
   .detail h2{font-family:var(--font-mono);font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
   .detail .acc{font-family:var(--font-mono);color:var(--ink-3);font-size:11.5px;margin:6px 0 10px;line-height:1.5}
   .detail .acc a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--ink-3)}
@@ -176,6 +195,17 @@
   .row span:first-child{color:var(--ink-3);flex:none}
   .row span:last-child{text-align:right;word-break:break-word;color:var(--ink)}
   .row .mono{font-size:12px}
+  .grp{margin-bottom:10px}
+  .gh{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;color:var(--accent-ink);font-size:12.5px;margin-bottom:5px}
+  .gh b{font-family:var(--font-mono);font-weight:500;font-size:11.5px;color:var(--ink-3)}
+  .gh b.na{font-family:var(--font-ui);font-style:italic;font-weight:400}
+  .why.na{color:var(--ink-3);font-size:11.5px;line-height:1.45;white-space:normal}
+  .critg{font-size:10.5px;color:var(--accent-ink);font-weight:600;margin:9px 0 2px;letter-spacing:.04em}
+  .critg:first-child{margin-top:2px}
+  .detail .intro dl{margin:0 0 12px}
+  .detail .intro dt{font-weight:600;color:var(--accent-ink);margin-top:9px}
+  .detail .intro dd{margin:2px 0 0;color:var(--ink-2)}
+  .detail .intro dd .ask{color:var(--ink);font-style:italic}
   .sc{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
   .sc .nm{font-weight:500;color:var(--ink)}
   .sc .val{display:inline-flex;align-items:center;gap:7px}
@@ -201,7 +231,7 @@
   .loading{grid-column:2/4;display:flex;align-items:center;justify-content:center;color:var(--ink-3)}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  @media (max-width:1500px){td.st{max-width:150px}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}}
+  @media (max-width:1500px){td.st{max-width:135px}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:.02em;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.03em}th.img{font-size:9.5px}}
   @media (max-width:1300px){.app{grid-template-columns:230px 1fr 310px}header .sub{display:none}}
   @media (max-width:1100px){.app{grid-template-columns:218px 1fr}.detail{position:fixed;top:60px;right:0;bottom:0;width:min(372px,90vw);box-shadow:-6px 0 24px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
   .detail .closeD{display:none;float:right;font-size:20px;border:none;background:none;color:var(--ink-3);cursor:pointer;line-height:1}
@@ -244,26 +274,31 @@
       <div class="ch"><h4 id="chartTitle">Score distribution</h4><small>total score, 0 to 12</small></div>
       <div class="bars" id="bars"></div>
     </div>
+    <div class="key" id="key"></div>
     <div class="tbl">
-      <div class="scroll" id="scroll"><table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div>
-      <div class="foot"><span id="count"></span><span>Nothing is excluded. The score is a guide, not the decision. <button data-modal="m-score">How it works</button></span></div>
+      <div class="scroll" id="scroll"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+      <div class="foot"><span id="count"></span><span>A low score is something to weigh, not a reason to drop a protein. <button data-modal="m-score">How it works</button></span></div>
     </div>
   </main>
 
   <section class="detail" id="detail">
-    <div class="empty"><b>No protein selected</b>Click a row to see where each score comes from, with links to the sources.</div>
+    <div class="empty intro" id="intro"></div>
   </section>
 </div>
 
 <div class="modal" id="m-criteria"><div class="box"><button class="close" aria-label="Close">×</button>
-  <h2>What the scores stand for</h2>
-  <p>Anchor proteins are a handful of proteins, 5 to 10, tagged in the U2-OS line so the same molecule can be seen by light microscopy and found in the EM volume of the same cell. Every human protein is scored on six questions, 0 to 2 each. <strong>None of them is a must-have.</strong> A low score on one is a fact to weigh, not a reason to drop the protein.</p>
-  <h3>Structure identity</h3><p>Does the protein sit on something an EM volume can show? 2: a clear structure (nuclear envelope, mitochondrial membrane, Golgi, centriole, lysosome…). 1: a broad or mixed class (vesicles, cytoskeleton, chromosome, cell projection). 0: diffuse (cytosol, nucleoplasm) or no location.</p>
-  <h3>Sources agree</h3><p>2: HPA and UniProt put it in the same compartment family. 1: only one of them has a location. 0: they disagree.</p>
-  <h3>HPA antibody</h3><p>HPA immunofluorescence reliability: 2 for Enhanced or Supported, 1 for Approved, 0 for Uncertain or no IF data. Proteins with good antibodies elsewhere can score 0 here.</p>
-  <h3>Expressed in U2-OS</h3><p>HPA RNA for the U2OS line: 2 at 10 nTPM or more, 1 at 1 or more, 0 below.</p>
-  <h3>Copy number known</h3><p>2 if Beck et al. 2011 measured copies per cell in U2-OS, 1 if not.</p>
-  <h3>Tagged line exists</h3><p>2 if OpenCell (HEK293T) or the Allen Cell Collection (hiPSC) already has an endogenously tagged line, 1 if not.</p>
+  <h2>The five proposed must-haves, and what the data can say</h2>
+  <p>Anchor proteins are a handful of proteins, 5 to 10, tagged in the U2-OS line so the same molecule can be seen by light microscopy and found in the EM volume of the same cell. The five headings are the proposed must-haves from the Space working group pre-read. Under each, the columns are what public databases can answer today, scored 0, 1 or 2. <strong>A low score is something to weigh, not a reason to drop a protein.</strong></p>
+  <h3>Identity</h3><p><em>A clear structure in EM, and sources agree on where it sits in U2-OS.</em></p>
+  <p><strong>Structure in EM.</strong> 2: a clear structure (nuclear envelope, mitochondrial membrane, Golgi, centriole, lysosome…). 1: a broad or mixed class (vesicles, cytoskeleton, chromosome, cell projection). 0: diffuse (cytosol, nucleoplasm) or no location.<br><strong>Sources agree.</strong> 2: HPA and UniProt put it in the same compartment family. 1: only one of them has a location. 0: they disagree.<br><strong>Expressed in U2-OS.</strong> HPA RNA for the U2OS line: 2 at 10 nTPM or more, 1 at 1 or more, 0 below.</p>
+  <h3>Taggable</h3><p><em>Takes an endogenous tag without moving or changing level; a homozygous line is viable.</em></p>
+  <p><strong>Tagged line exists.</strong> 2 if OpenCell (HEK293T) or the Allen Cell Collection (hiPSC) already has an endogenously tagged line, 1 if not. Tag tolerance and viability are not in any database. DepMap essentiality in U2-OS is shown in the detail panel as a hint only.</p>
+  <h3>Quantifiable</h3><p><em>Enough copies per cell to count, not so many they saturate; a published number to check against.</em></p>
+  <p><strong>Copy number known.</strong> 2 if Beck et al. 2011 measured copies per cell in U2-OS, 1 if not. The number itself is in the last column; "enough, not too many" is a judgment.</p>
+  <h3>Imageable</h3><p><em>The tag signal survives cryo preparation, and the structure is still recognizable.</em></p>
+  <p>Not scored. No dataset answers this; it needs an experiment.</p>
+  <h3>Practical</h3><p><em>A validated antibody exists; a line can be made in 2027 with tags that exist today.</em></p>
+  <p><strong>HPA antibody.</strong> HPA immunofluorescence reliability: 2 for Enhanced or Supported, 1 for Approved, 0 for Uncertain or no IF data. Proteins with good antibodies elsewhere can score 0 here. Whether a line can be made is not scored.</p>
 </div></div>
 
 <div class="modal" id="m-score"><div class="box"><button class="close" aria-label="Close">×</button>
@@ -293,8 +328,15 @@
 <script>
 const FAMS=['nuclear envelope','nucleolus','nuclear bodies','centromere/kinetochore','chromosome','mitochondria','ER','Golgi','endolysosomal','peroxisome','lipid droplet','centrosome','plasma membrane','junctions/adhesions','cytoskeleton','no location'];
 const FAMLBL={'nuclear envelope':'Nuclear envelope','nucleolus':'Nucleolus','nuclear bodies':'Nuclear bodies','centromere/kinetochore':'Centromere / kinetochore','chromosome':'Chromosome','mitochondria':'Mitochondria','ER':'ER','Golgi':'Golgi','endolysosomal':'Endolysosomal','peroxisome':'Peroxisome','lipid droplet':'Lipid droplet','centrosome':'Centrosome','plasma membrane':'Plasma membrane','junctions/adhesions':'Junctions / adhesions','cytoskeleton':'Cytoskeleton','no location':'No location'};
-const CRITS=[['score_identity','Identity','Structure identity'],['score_sources_agree','Agree','Sources agree'],['score_antibody','Antibody','HPA antibody'],['score_expressed_u2os','U2-OS','Expressed in U2-OS'],['score_copy_number','Copies','Copy number known'],['score_tag_evidence','Tagged','Tagged line exists']];
-const COLS=[['gene_name','Gene'],['em_structures','Structures'],...CRITS.map(c=>[c[0],c[1]]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
+const GROUPS=[
+  {k:'identity',label:'Identity',ask:'A clear structure in EM, and sources agree on where it sits in U2-OS.',data:'Three scores: a structure an EM volume can show, HPA and UniProt agreeing on the compartment, and RNA expression in U2-OS.',crits:['score_identity','score_sources_agree','score_expressed_u2os']},
+  {k:'taggable',label:'Taggable',ask:'Takes an endogenous tag without moving or changing level; a homozygous line is viable.',data:'Only one thing is in a database: whether an OpenCell or Allen line already exists. Whether it tolerates a tag, or a homozygous line is viable, is not. DepMap essentiality (in the detail panel) is a hint, nothing more.',crits:['score_tag_evidence']},
+  {k:'quantifiable',label:'Quantifiable',ask:'Enough copies per cell to count, not so many they saturate; a published number to check against.',data:'Whether Beck et al. 2011 measured copies per cell in U2-OS. "Enough, not too many" is a judgment; the number itself is in the last column.',crits:['score_copy_number']},
+  {k:'imageable',label:'Imageable',ask:'The tag signal survives cryo preparation, and the structure is still recognizable.',data:'No dataset answers this. It needs an experiment, so it is not scored.',crits:[]},
+  {k:'practical',label:'Practical',ask:'A validated antibody exists; a line can be made in 2027 with tags that exist today.',data:'HPA immunofluorescence reliability for the antibody. Whether a line can be made is not scored.',crits:['score_antibody']}];
+const CRITS=[['score_identity','Structure','Structure in EM','Does it sit on a structure an EM volume can show? 2 clear structure, 1 broad class, 0 diffuse or unknown.'],['score_sources_agree','Agree','Sources agree','Do HPA and UniProt put it in the same compartment? 2 yes, 1 only one has a location, 0 they disagree.'],['score_expressed_u2os','U2-OS','Expressed in U2-OS','Is it expressed in U2-OS cells? 2 at 10 nTPM or more, 1 at 1 or more, 0 below.'],['score_tag_evidence','Line','Tagged line exists','Has someone already tagged it? 2 an OpenCell or Allen line exists, 1 not yet.'],['score_copy_number','Copies','Copy number known','Do we know how many copies per cell? 2 measured in U2-OS (Beck 2011), 1 not measured.'],['score_antibody','Antibody','HPA antibody','How reliable is the HPA immunofluorescence? 2 enhanced or supported, 1 approved, 0 uncertain or none.']];
+const CRIT=Object.fromEntries(CRITS.map(c=>[c[0],c]));
+const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>[k,CRIT[k][1]]):[['_img','not scored']]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
 const NUM=new Set(['score_total','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
 const CENTER=new Set(CRITS.map(c=>c[0]));
 let DATA=[],BASE=[],VIEW=[],sel=null,sortKey='score_total',sortDir=-1,shown=0;
@@ -333,12 +375,15 @@ function render(){
   const hist=new Array(13).fill(0);for(const r of VIEW)hist[r.score_total]++;const mx=Math.max(1,...hist);
   $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''} ${S.minTotal&&i===S.minTotal?'cut':''}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?n.toLocaleString('en'):''}</em><span>${i}</span></div>`).join('');
   $('chartTitle').textContent=`${VIEW.length.toLocaleString('en')} proteins in the current view`;
-  $('count').innerHTML=`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins · click a column to sort, a row to open it`;
-  $('thead').innerHTML=COLS.map(([k,l])=>`<th data-k="${k}" class="${CENTER.has(k)?'c':(NUM.has(k)?'num':'')} ${k===sortKey?('sorted '+(sortDir<0?'desc':'asc')):''}">${l}</th>`).join('');
+  $('count').innerHTML=`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins · click a column to sort, a row to open`;
+  const TIP=Object.fromEntries(CRITS.map(c=>[c[0],c[2]+'. '+c[3]]));TIP.score_total='Sum of the six criteria, 0 to 12, equal weight.';TIP.copies_per_cell_U2OS='Copies per cell in U2-OS, Beck et al. 2011.';TIP.em_structures='Structures the protein is annotated on, from HPA and UniProt. Dashed means a broad class.';
+  const g1=`<tr class="grp"><th colspan="2"></th>${GROUPS.map(g=>`<th colspan="${Math.max(1,g.crits.length)}" class="g ${g.k}" title="${esc(g.ask+' '+g.data)}">${g.label}</th>`).join('')}<th colspan="2"></th></tr>`;
+  const g2=`<tr>${COLS.map(([k,l])=>k==='_img'?`<th class="c img" title="${esc(GROUPS[3].data)}">${l}</th>`:`<th data-k="${k}" title="${esc(TIP[k]||'')}" class="${CENTER.has(k)?'c':(NUM.has(k)?'num':'')} ${k===sortKey?('sorted '+(sortDir<0?'desc':'asc')):''}">${l}</th>`).join('')}</tr>`;
+  $('thead').innerHTML=g1+g2;
   $('tbody').innerHTML='';shown=0;$('scroll').scrollTop=0;more()}
-function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${CRITS.map(c=>`<td class="c">${mark(r[c[0]])}</td>`).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
+function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>`<td class="c ${g.k}">${mark(r[k])}</td>`):[`<td class="c img">–</td>`]).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
 $('scroll').addEventListener('scroll',e=>{const s=e.target;if(s.scrollTop+s.clientHeight>s.scrollHeight-600&&shown<VIEW.length)more()});
-$('thead').addEventListener('click',e=>{const th=e.target.closest('th');if(!th)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=NUM.has(k)?-1:1}sortView();render()});
+$('thead').addEventListener('click',e=>{const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=NUM.has(k)?-1:1}sortView();render()});
 $('tbody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(!tr)return;sel=VIEW[+tr.dataset.i];document.querySelectorAll('#tbody tr.sel').forEach(x=>x.classList.remove('sel'));tr.classList.add('sel');showDetail(sel)});
 
 function cleanUni(s){return s.replace(/SUBCELLULAR LOCATION:\s*/,'').replace(/\{[^}]*\}/g,'').replace(/\{[^}]*$/,'').replace(/\s*;\s*/g,'; ').replace(/\s+\./g,'.').replace(/\s{2,}/g,' ').trim()}
@@ -355,7 +400,7 @@ function showDetail(r){
     <div class="acc">${esc(r.uniprot||'')}${r.ensembl?' · '+esc(r.ensembl):''}</div>
     <div class="fams">${r.fams.map(f=>`<span>${esc(FAMLBL[f]||f)}</span>`).join('')}</div>
     <div class="links">${hpaUrl?`<a href="${hpaUrl}" target="_blank" rel="noopener">HPA</a>`:''}${r.uniprot?`<a href="https://www.uniprot.org/uniprotkb/${r.uniprot}/entry" target="_blank" rel="noopener">UniProt</a>`:''}${r.tag_lines.includes('OpenCell')?`<a href="https://opencell.sf.czbiohub.org/search?query=${r.gene_name}" target="_blank" rel="noopener">OpenCell</a>`:''}<a href="https://depmap.org/portal/gene/${r.gene_name}?tab=overview" target="_blank" rel="noopener">DepMap</a></div>
-    <div class="card"><h5>Score <b>${r.score_total} / 12</b></h5><div class="sc">${CRITS.map(c=>`<span class="nm">${c[2]}</span><span class="val">${mark(r[c[0]])}<b>${r[c[0]]}</b></span><div class="why">${why[c[0]]}</div>`).join('')}</div></div>
+    <div class="card"><h5>Score <b>${r.score_total} / 12</b></h5>${GROUPS.map(g=>`<div class="grp"><div class="gh"><span>${g.label}</span>${g.crits.length?`<b>${g.crits.reduce((a,k)=>a+(r[k]||0),0)} / ${g.crits.length*2}</b>`:'<b class="na">not scored</b>'}</div>${g.crits.length?`<div class="sc">${g.crits.map(k=>CRIT[k]).map(c=>`<span class="nm">${c[2]}</span><span class="val">${mark(r[c[0]])}<b>${r[c[0]]}</b></span><div class="why">${why[c[0]]}</div>`).join('')}</div>`:`<div class="why na">${esc(g.data)}</div>`}</div>`).join('')}</div>
     <div class="card"><h5>Structures</h5><div>${r.structs.length?r.structs.map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join(''):'<span class="pill part">none mapped</span>'}</div></div>
     <div class="card"><h5>Other facts</h5>
       <div class="row"><span>Source</span><span>${esc(r.source)}</span></div>
@@ -366,9 +411,11 @@ function showDetail(r){
       <div class="row"><span>Protein class</span><span>${esc(r.protein_class||'')}</span></div>
     </div>`}
 
+$('key').innerHTML=`<span class="hint">The five headings are the proposed must-haves. Under each, one column per dataset, scored</span><span>${mark(2)}<b>2</b></span><span>${mark(1)}<b>1</b></span><span>${mark(0)}<b>0</b></span><span class="hint">Hover a heading or a column for what the number means. Imageable has no dataset behind it.</span>`;
+$('intro').innerHTML=`<h2>What this is</h2><p>Anchor proteins are the handful, 5 to 10, we plan to tag in U2-OS so the same molecule can be seen by light microscopy and then found again in the EM volume of the same cell. This page is a first pass at who the candidates might be, using what public databases already say.</p><p>The five proposed must-haves, and what the data can and cannot answer:</p><dl>${GROUPS.map(g=>`<dt>${g.label}</dt><dd><span class="ask">${esc(g.ask)}</span> ${esc(g.data)}</dd>`).join('')}</dl><p>Each dataset column is scored 0, 1 or 2. The total is the plain sum, 0 to 12, so Identity, with three columns, weighs more than the others. Weighting, and the final choice, is for the working group.</p><p class="next">Click a row to see where its scores come from, with links to the sources.</p>`;
 $('fams').innerHTML=FAMS.map(f=>`<div class="fam" data-f="${f}"><span><i class="sw"></i>${FAMLBL[f]}</span><small></small></div>`).join('');
 $('fams').addEventListener('click',e=>{const d=e.target.closest('.fam');if(!d)return;const f=d.dataset.f;if(S.fams.has(f))S.fams.delete(f);else S.fams.add(f);d.classList.toggle('on');apply()});
-$('crits').innerHTML=CRITS.map(c=>`<div class="crit" data-k="${c[0]}"><span>${c[2]}</span><span class="seg"><b data-v="0" class="on">any</b><b data-v="1">≥1</b><b data-v="2">2</b></span></div>`).join('');
+$('crits').innerHTML=GROUPS.filter(g=>g.crits.length).map(g=>`<div class="critg">${g.label}</div>`+g.crits.map(k=>CRIT[k]).map(c=>`<div class="crit" data-k="${c[0]}" title="${esc(c[3])}"><span>${c[2]}</span><span class="seg"><b data-v="0" class="on">any</b><b data-v="1">≥1</b><b data-v="2">2</b></span></div>`).join('')).join('');
 $('crits').addEventListener('click',e=>{const b=e.target.closest('b');if(!b)return;const k=b.closest('.crit').dataset.k;const v=+b.dataset.v;b.parentElement.querySelectorAll('b').forEach(x=>x.classList.toggle('on',x===b));if(v)S.crit[k]=v;else delete S.crit[k];apply()});
 $('q').addEventListener('input',e=>{S.q=e.target.value;apply()});
 for(const [id,k] of [['f-expr','expr'],['f-tag','tag'],['f-copy','copy'],['f-nothpa','nothpa'],['f-tm','tm']])$(id).addEventListener('change',e=>{S[k]=e.target.checked;apply()});
@@ -380,6 +427,6 @@ $('theme').addEventListener('click',()=>{const root=document.documentElement;con
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'))});
 $('dl').addEventListener('click',()=>{const keys=Object.keys(DATA[0]).filter(k=>!k.startsWith('_')&&k!=='fams'&&k!=='structs');const lines=[keys.join('\t'),...VIEW.map(r=>keys.map(k=>r[k]??'').join('\t'))];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/tab-separated-values'}));a.download='anchor_scores_filtered.tsv';a.click()});
 
-fetch('anchor_scores.tsv').then(r=>r.text()).then(t=>{DATA=parseTSV(t);$('subtitle').textContent=`${DATA.length.toLocaleString('en')} proteins scored on six criteria. Nothing excluded. A guide, not the decision.`;apply()}).catch(e=>{$('subtitle').textContent='Could not load anchor_scores.tsv';console.error(e)});
+fetch('anchor_scores.tsv').then(r=>r.text()).then(t=>{DATA=parseTSV(t);$('subtitle').textContent=`Every human protein, scored against the five proposed must-haves.`;apply()}).catch(e=>{$('subtitle').textContent='Could not load anchor_scores.tsv';console.error(e)});
 </script>
 </body></html>
