@@ -3,116 +3,211 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Anchor protein explorer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--teal:#045C64;--green:#AED047;--ink:#1d1d1f;--grey:#6b7280;--line:#e5e7eb;--bg:#f6f7f8;--s0:#eef0f1;--s1:#cfe3e5;--s2:#045C64}
+  /* Layout: fixed three-column instrument panel. Header band is the one bold element; everything else is quiet. */
+  :root{
+    --accent:#045C64;        /* program teal */
+    --accent-ink:#03474d;
+    --accent-soft:#d6e9ea;   /* score level 1 */
+    --accent-tint:#eaf3f3;   /* hover, selection */
+    --accent-glow:#AED047;   /* program green, used once: threshold marker */
+    --ink:#182426;
+    --ink-2:#4c5e61;
+    --ink-3:#7f9093;
+    --line:#dde5e6;
+    --line-2:#eef2f3;
+    --bg:#f1f4f5;
+    --panel:#ffffff;
+    --panel-2:#f7f9f9;
+    --empty:#e7edee;         /* score level 0 */
+    --band:#0b3f45;          /* header band */
+    --band-ink:#f4f8f8;
+    --band-mute:#9fc1c4;
+    --font-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --shadow:0 1px 2px rgba(11,63,69,.06),0 8px 24px -16px rgba(11,63,69,.25);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --accent:#5fb8bf;--accent-ink:#8fd3d8;--accent-soft:#1f5257;--accent-tint:#13343a;--accent-glow:#c3df6a;
+      --ink:#e6eeee;--ink-2:#a9bcbe;--ink-3:#78908f;--line:#243a3d;--line-2:#1c3033;--bg:#0d1a1c;--panel:#122225;--panel-2:#172b2e;--empty:#1e3236;
+      --band:#081e22;--band-ink:#eef5f5;--band-mute:#7fa3a6;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.7);
+      color-scheme:dark;
+    }
+  }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{background:var(--bg);font-family:Lato,Arial,Helvetica,sans-serif;color:var(--ink);font-size:13px}
-  .app{height:100vh;display:grid;grid-template-rows:56px 1fr;grid-template-columns:240px 1fr 340px}
-  header{grid-column:1/4;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:18px}
-  header h1{font-size:18px;font-weight:700;white-space:nowrap}
-  header .sub{font-size:13px;color:var(--grey)}
-  header nav{margin-left:auto;display:flex;gap:10px}
-  header nav button{font:inherit;font-size:12px;color:var(--grey);border:1px solid var(--line);padding:5px 11px;border-radius:14px;background:#fff;cursor:pointer}
-  header nav button:hover{color:var(--teal);border-color:var(--teal)}
-  aside{background:#fff;border-right:1px solid var(--line);padding:16px 18px;overflow:auto}
-  aside h3{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--grey);margin:18px 0 8px}
+  body{background:var(--bg);font-family:var(--font-ui);color:var(--ink);font-size:13px;line-height:1.4;-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit}
+  .mono{font-family:var(--font-mono)}
+  .app{height:100vh;display:grid;grid-template-rows:60px 1fr;grid-template-columns:252px 1fr 352px}
+
+  /* Header band */
+  header{grid-column:1/4;background:var(--band);color:var(--band-ink);display:flex;align-items:center;padding:0 22px;gap:16px}
+  header .brand{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+  header h1{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  header .brand .ver{font-family:var(--font-mono);font-size:11px;color:var(--band-mute);letter-spacing:.02em}
+  header .sub{font-size:12.5px;color:var(--band-mute);border-left:1px solid rgba(255,255,255,.14);padding-left:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  header nav{margin-left:auto;display:flex;gap:6px;flex:none}
+  header nav button{font-size:12px;color:var(--band-ink);border:1px solid rgba(255,255,255,.18);padding:6px 12px;border-radius:6px;background:transparent;cursor:pointer;transition:background .12s,border-color .12s}
+  header nav button:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.34)}
+  header nav button.primary{background:var(--band-ink);color:var(--band);border-color:var(--band-ink);font-weight:500}
+  header nav button.primary:hover{background:#fff}
+
+  /* Sidebar */
+  aside{background:var(--panel);border-right:1px solid var(--line);padding:18px 18px 24px;overflow:auto}
+  aside h3{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin:22px 0 8px}
   aside h3:first-child{margin-top:0}
-  aside input[type=text]{width:100%;font:inherit;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
-  .fam{display:flex;justify-content:space-between;align-items:center;padding:4px 0;cursor:pointer;color:#222;user-select:none}
-  .fam small{color:var(--grey)}
-  .fam.on{color:var(--teal);font-weight:700}
-  .fam .sw{width:10px;height:10px;border-radius:2px;background:var(--s0);margin-right:8px;flex:none}
-  .fam.on .sw{background:var(--teal)}
-  .fam span{display:flex;align-items:center;flex:1}
-  .chk{display:flex;gap:8px;align-items:center;padding:4px 0;cursor:pointer;user-select:none}
-  .chk input{accent-color:var(--teal);width:14px;height:14px}
-  .crit{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 8px;padding:3px 0}
-  .crit .seg{display:inline-flex;border:1px solid var(--line);border-radius:5px;overflow:hidden}
-  .crit .seg b{font-weight:400;padding:2px 7px;cursor:pointer;font-size:11px;color:var(--grey);border-right:1px solid var(--line)}
+  .search{position:relative}
+  .search svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:1.8;pointer-events:none}
+  aside input[type=text]{width:100%;font:inherit;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px 10px 8px 30px;background:var(--panel-2);outline:none;transition:border-color .12s,box-shadow .12s}
+  aside input[type=text]::placeholder{color:var(--ink-3)}
+  aside input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint);background:var(--panel)}
+  .fam{display:flex;justify-content:space-between;align-items:center;padding:4px 6px;margin:0 -6px;border-radius:6px;cursor:pointer;color:var(--ink);user-select:none;transition:background .1s}
+  .fam:hover{background:var(--panel-2)}
+  .fam small{font-family:var(--font-mono);font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .fam.on{background:var(--accent-tint);color:var(--accent-ink);font-weight:500}
+  .fam.on small{color:var(--accent-ink)}
+  .fam .sw{width:12px;height:12px;border-radius:3px;border:1.5px solid var(--line);background:transparent;margin-right:9px;flex:none;transition:all .12s}
+  .fam.on .sw{background:var(--accent);border-color:var(--accent)}
+  .fam span{display:flex;align-items:center;flex:1;min-width:0}
+  .chk{display:flex;gap:9px;align-items:flex-start;padding:4px 0;cursor:pointer;user-select:none;color:var(--ink);line-height:1.35}
+  .chk input{accent-color:var(--accent);width:14px;height:14px;margin-top:2px;flex:none}
+  .crit{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 8px;padding:3px 0;color:var(--ink)}
+  .crit .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel-2)}
+  .crit .seg b{font-family:var(--font-mono);font-weight:500;padding:3px 8px;cursor:pointer;font-size:11px;color:var(--ink-3);border-right:1px solid var(--line);transition:background .1s,color .1s}
   .crit .seg b:last-child{border-right:none}
-  .crit .seg b.on{background:var(--teal);color:#fff}
-  .range{display:flex;align-items:center;gap:8px;margin-top:6px}
-  .range input{flex:1;accent-color:var(--teal)}
-  .mini{font-size:11px;color:var(--grey);display:flex;justify-content:space-between;margin-top:2px}
-  .reset{margin-top:18px;font:inherit;font-size:12px;color:var(--teal);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0}
-  main{padding:16px 20px;overflow:hidden;display:flex;flex-direction:column;gap:12px;min-width:0}
-  .chart{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 16px 8px;flex:none}
-  .chart h4{font-size:12px;color:var(--grey);font-weight:400;margin-bottom:10px}
-  .bars{display:flex;align-items:flex-end;gap:6px;height:70px;padding:0 4px 18px;position:relative}
-  .bar{flex:1;background:var(--s1);border-radius:2px 2px 0 0;position:relative;min-height:1px}
-  .bar.hi{background:var(--teal)}
-  .bar span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--grey)}
-  .bar em{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-style:normal}
-  .tbl{background:#fff;border:1px solid var(--line);border-radius:8px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .crit .seg b:hover{color:var(--accent-ink)}
+  .crit .seg b.on{background:var(--accent);color:#fff}
+  .range{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .range input{flex:1;accent-color:var(--accent)}
+  .mini{font-family:var(--font-mono);font-size:11px;color:var(--ink-3);display:flex;justify-content:space-between;margin-top:3px}
+  .mini b{color:var(--accent-ink);font-weight:500}
+  .reset{margin-top:22px;font-size:12px;color:var(--accent-ink);background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;width:100%;transition:background .1s}
+  .reset:hover{background:var(--accent-tint);border-color:var(--accent)}
+
+  /* Main */
+  main{padding:16px 18px 16px 20px;overflow:hidden;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .chart{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px 10px;flex:none;box-shadow:var(--shadow)}
+  .chart .ch{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .chart h4{font-size:12px;color:var(--ink-2);font-weight:500}
+  .chart .ch small{font-family:var(--font-mono);font-size:11px;color:var(--ink-3)}
+  .bars{display:flex;align-items:flex-end;gap:5px;height:72px;padding:0 2px 18px;position:relative;border-bottom:1px solid var(--line)}
+  .bar{flex:1;background:var(--accent-soft);border-radius:3px 3px 0 0;position:relative;min-height:2px;transition:height .25s ease,background .15s}
+  .bar.hi{background:var(--accent)}
+  .bar.cut::before{content:"";position:absolute;left:-3px;top:-6px;bottom:-1px;width:2px;background:var(--accent-glow);border-radius:1px}
+  .bar span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3)}
+  .bar em{position:absolute;top:-15px;left:-6px;right:-6px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--ink-2);font-style:normal;font-variant-numeric:tabular-nums}
+  .tbl{background:var(--panel);border:1px solid var(--line);border-radius:10px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
   .scroll{overflow:auto;flex:1}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th{position:sticky;top:0;z-index:1;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--grey);text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);font-weight:700;background:#fafafa;cursor:pointer;white-space:nowrap;user-select:none}
-  th.sorted{color:var(--teal)}
-  th.num{text-align:right}
-  td{padding:8px 8px;border-bottom:1px solid #f0f0f0;vertical-align:middle;white-space:nowrap}
-  td.st{max-width:230px;overflow:hidden;text-overflow:ellipsis}
-  th{padding:10px 8px}
-  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+  th{position:sticky;top:0;z-index:1;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);text-align:left;padding:11px 8px 9px;border-bottom:1px solid var(--line);font-weight:600;background:var(--panel);cursor:pointer;white-space:nowrap;user-select:none;transition:color .1s}
+  th:first-child{padding-left:16px}
+  th:hover{color:var(--ink)}
+  th.sorted{color:var(--accent-ink)}
+  th.sorted::after{content:"";display:inline-block;width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;margin-left:5px;vertical-align:1px}
+  th.sorted.desc::after{border-top:4px solid currentColor}
+  th.sorted.asc::after{border-bottom:4px solid currentColor}
+  th.num,td.num{text-align:right}
+  th.c,td.c{text-align:center;padding-left:3px;padding-right:3px}
+  th.c{font-size:10px;letter-spacing:.05em}
+  td{padding:0 8px;height:38px;border-bottom:1px solid var(--line-2);vertical-align:middle;white-space:nowrap}
+  td:first-child{padding-left:16px}
+  td.st{max-width:200px;overflow:hidden;text-overflow:ellipsis}
+  td.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--ink-2)}
   tr{cursor:pointer}
-  tr:hover td{background:#f7fafa}
-  tr.sel td{background:#eef6f6}
-  td.g{font-weight:700}
-  .dots{display:inline-flex;gap:3px}
-  .d{width:13px;height:13px;border-radius:3px;background:var(--s0)}
-  .d.one{background:var(--s1)}.d.two{background:var(--s2)}
-  .tot{font-weight:700;color:var(--teal)}
-  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#f1f3f4;color:#333;margin-right:4px}
-  .pill.part{background:#fff;border:1px dashed #bbb;color:#555}
-  .foot{font-size:11px;color:var(--grey);padding:8px 12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex:none}
-  .foot button{font:inherit;font-size:11px;color:var(--teal);background:none;border:none;cursor:pointer;text-decoration:underline}
-  .detail{background:#fff;border-left:1px solid var(--line);padding:20px 22px;overflow:auto}
-  .detail .empty{color:var(--grey);font-size:13px;line-height:1.5;margin-top:10px}
-  .detail h2{font-size:24px}
-  .detail .acc{color:var(--grey);font-size:12px;margin:2px 0 12px;line-height:1.4}
-  .detail .links a{color:var(--teal);text-decoration:underline;margin-right:12px;font-size:12px}
-  .card{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:14px}
-  .card h5{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--grey);margin-bottom:8px}
-  .row{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px dashed #eee;line-height:1.4}
+  tbody tr:hover td{background:var(--panel-2)}
+  tr.sel td{background:var(--accent-tint)}
+  tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  td.g{font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--ink);letter-spacing:.01em}
+  /* score marks: a two-step bar per criterion */
+  .m{display:inline-flex;gap:2px;vertical-align:middle}
+  .m i{display:block;width:10px;height:14px;border-radius:2px;background:var(--empty)}
+  .m.v2 i{background:var(--accent)}
+  .m.v1 i:first-child{background:var(--accent);opacity:.45}
+  /* total: 12-step strip + number */
+  .tot{display:inline-flex;align-items:center;gap:8px;justify-content:flex-end}
+  .tot .strip{display:inline-flex;gap:1.5px}
+  .tot .strip i{display:block;width:3.5px;height:14px;background:var(--empty);border-radius:1px}
+  .tot .strip i.f{background:var(--accent)}
+  .tot b{font-family:var(--font-mono);font-weight:600;color:var(--accent-ink);min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink-2);margin-right:4px;line-height:1.4}
+  .pill.part{background:transparent;border-style:dashed;color:var(--ink-3)}
+  .pill.more{background:transparent;border-color:transparent;color:var(--ink-3);font-family:var(--font-mono);padding-left:2px}
+  .foot{font-size:11.5px;color:var(--ink-3);padding:8px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex:none;background:var(--panel-2)}
+  .foot button{font-size:11.5px;color:var(--accent-ink);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+  .foot .mono{color:var(--ink-2)}
+
+  /* Detail */
+  .detail{background:var(--panel);border-left:1px solid var(--line);padding:22px 22px 28px;overflow:auto}
+  .detail .empty{color:var(--ink-3);font-size:13px;line-height:1.5;margin-top:10px;max-width:28ch}
+  .detail .empty b{display:block;color:var(--ink-2);font-weight:500;margin-bottom:4px}
+  .detail h2{font-family:var(--font-mono);font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
+  .detail .acc{font-family:var(--font-mono);color:var(--ink-3);font-size:11.5px;margin:6px 0 10px;line-height:1.5}
+  .detail .acc a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--ink-3)}
+  .fams{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px}
+  .fams span{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--accent-tint);color:var(--accent-ink);font-weight:500}
+  .links{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+  .links a{font-size:11.5px;color:var(--accent-ink);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:4px 9px;transition:background .1s,border-color .1s;display:inline-flex;align-items:center;gap:5px}
+  .links a::after{content:"↗";font-size:10px;color:var(--ink-3)}
+  .links a:hover{background:var(--accent-tint);border-color:var(--accent)}
+  .card{border-top:1px solid var(--line);padding:14px 0 4px;margin-top:14px}
+  .card h5{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:10px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+  .card h5 b{font-family:var(--font-mono);font-size:12px;color:var(--accent-ink);letter-spacing:0;text-transform:none}
+  .row{display:flex;justify-content:space-between;gap:14px;padding:5px 0;border-bottom:1px solid var(--line-2);line-height:1.4}
   .row:last-child{border-bottom:none}
-  .row span:first-child{color:var(--grey);flex:none}
-  .row span:last-child{text-align:right;word-break:break-word}
-  .sc{display:grid;grid-template-columns:1fr auto auto;gap:3px 10px;align-items:center}
-  .sc .why{grid-column:1/4;font-size:11px;color:var(--grey);margin:-1px 0 7px;line-height:1.4;white-space:normal}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:10}
+  .row span:first-child{color:var(--ink-3);flex:none}
+  .row span:last-child{text-align:right;word-break:break-word;color:var(--ink)}
+  .row .mono{font-size:12px}
+  .sc{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
+  .sc .nm{font-weight:500;color:var(--ink)}
+  .sc .val{display:inline-flex;align-items:center;gap:7px}
+  .sc .val b{font-family:var(--font-mono);font-weight:600;color:var(--accent-ink);width:10px;text-align:right}
+  .sc .why{grid-column:1/3;font-size:11.5px;color:var(--ink-2);margin:0 0 9px;line-height:1.45;white-space:normal}
+  .sc .why em{font-style:normal;color:var(--ink-3)}
+
+  /* Modals */
+  .modal{position:fixed;inset:0;background:rgba(8,30,34,.45);display:none;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(2px)}
   .modal.open{display:flex}
-  .modal .box{background:#fff;border-radius:10px;max-width:720px;width:92%;max-height:84vh;overflow:auto;padding:26px 30px;line-height:1.55;font-size:14px}
-  .modal h2{font-size:20px;margin-bottom:12px}
-  .modal h3{font-size:14px;margin:16px 0 4px;color:var(--teal)}
-  .modal p{margin:6px 0}
-  .modal a{color:var(--teal)}
-  .modal .close{float:right;font:inherit;border:none;background:none;cursor:pointer;color:var(--grey);font-size:18px}
+  .modal .box{background:var(--panel);color:var(--ink);border-radius:12px;max-width:720px;width:92%;max-height:84vh;overflow:auto;padding:26px 30px 28px;line-height:1.55;font-size:13.5px;box-shadow:0 30px 60px -20px rgba(0,0,0,.45)}
+  .modal h2{font-size:19px;margin-bottom:12px;font-weight:600;letter-spacing:-.01em}
+  .modal h3{font-size:13px;margin:18px 0 3px;color:var(--accent-ink);font-weight:600}
+  .modal p{margin:6px 0;color:var(--ink-2)}
+  .modal p strong{color:var(--ink)}
+  .modal a{color:var(--accent-ink)}
+  .modal code{font-family:var(--font-mono);font-size:12px;background:var(--panel-2);padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+  .modal .close{float:right;border:none;background:none;cursor:pointer;color:var(--ink-3);font-size:20px;line-height:1;padding:0 0 0 12px}
   .modal table{font-size:13px;margin-top:6px}
-  .modal td,.modal th{padding:5px 8px;white-space:normal;vertical-align:top;cursor:default}
-  .modal th{position:static;cursor:default}
-  .loading{grid-column:2/4;display:flex;align-items:center;justify-content:center;color:var(--grey)}
-  @media (max-width:1500px){td.st{max-width:190px}td,th{padding-left:6px;padding-right:6px}}
-  @media (max-width:1300px){.app{grid-template-columns:220px 1fr 300px}header .sub{display:none}}
-  @media (max-width:1100px){.app{grid-template-columns:210px 1fr}.detail{position:fixed;top:56px;right:0;bottom:0;width:min(360px,90vw);box-shadow:-6px 0 20px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
-  .detail .closeD{display:none;float:right;font:inherit;font-size:18px;border:none;background:none;color:var(--grey);cursor:pointer}
+  .modal td,.modal th{padding:7px 8px;white-space:normal;vertical-align:top;cursor:default;height:auto}
+  .modal th{position:static;cursor:default;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);font-weight:600;width:34%;border-bottom:1px solid var(--line-2);padding-left:8px}
+  .modal td{color:var(--ink-2);border-bottom:1px solid var(--line-2)}
+  .loading{grid-column:2/4;display:flex;align-items:center;justify-content:center;color:var(--ink-3)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:1500px){td.st{max-width:150px}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}}
+  @media (max-width:1300px){.app{grid-template-columns:230px 1fr 310px}header .sub{display:none}}
+  @media (max-width:1100px){.app{grid-template-columns:218px 1fr}.detail{position:fixed;top:60px;right:0;bottom:0;width:min(372px,90vw);box-shadow:-6px 0 24px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
+  .detail .closeD{display:none;float:right;font-size:20px;border:none;background:none;color:var(--ink-3);cursor:pointer;line-height:1}
 </style></head>
 <body>
 <div class="app">
   <header>
-    <h1>Anchor protein explorer</h1>
+    <div class="brand"><h1>Anchor protein explorer</h1><span class="ver">Alpha Cell · U2-OS</span></div>
     <span class="sub" id="subtitle">Loading…</span>
     <nav>
       <button data-modal="m-criteria">Criteria</button>
       <button data-modal="m-score">How the score is made</button>
       <button data-modal="m-sources">Data sources</button>
-      <button id="dl">Download filtered CSV</button>
+      <button id="dl" class="primary">Download filtered TSV</button>
     </nav>
   </header>
 
   <aside>
     <h3>Search</h3>
-    <input type="text" id="q" placeholder="gene name or UniProt ID">
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" id="q" placeholder="Gene name or UniProt ID"></div>
     <h3>Compartment family</h3>
     <div id="fams"></div>
     <h3>Quick filters</h3>
@@ -125,13 +220,13 @@
     <div id="crits"></div>
     <h3>Minimum total score</h3>
     <div class="range"><input type="range" id="minTotal" min="0" max="12" value="0"></div>
-    <div class="mini"><span>0</span><span id="minTotalLbl">any</span><span>12</span></div>
+    <div class="mini"><span>0</span><b id="minTotalLbl">any</b><span>12</span></div>
     <button class="reset" id="reset">Reset all filters</button>
   </aside>
 
   <main>
     <div class="chart">
-      <h4 id="chartTitle">Score distribution</h4>
+      <div class="ch"><h4 id="chartTitle">Score distribution</h4><small>total score, 0 to 12</small></div>
       <div class="bars" id="bars"></div>
     </div>
     <div class="tbl">
@@ -141,13 +236,13 @@
   </main>
 
   <section class="detail" id="detail">
-    <div class="empty">Click a row to see where each score comes from, with links to the sources.</div>
+    <div class="empty"><b>No protein selected</b>Click a row to see where each score comes from, with links to the sources.</div>
   </section>
 </div>
 
-<div class="modal" id="m-criteria"><div class="box"><button class="close">×</button>
+<div class="modal" id="m-criteria"><div class="box"><button class="close" aria-label="Close">×</button>
   <h2>What the scores stand for</h2>
-  <p>Anchor proteins are a handful of proteins, 5 to 10, tagged in the U2-OS line so the same molecule can be seen by light microscopy and found in the EM volume of the same cell. Every human protein is scored on six questions, 0 to 2 each. None of them is a must-have. A low score on one is a fact to weigh, not a reason to drop the protein.</p>
+  <p>Anchor proteins are a handful of proteins, 5 to 10, tagged in the U2-OS line so the same molecule can be seen by light microscopy and found in the EM volume of the same cell. Every human protein is scored on six questions, 0 to 2 each. <strong>None of them is a must-have.</strong> A low score on one is a fact to weigh, not a reason to drop the protein.</p>
   <h3>Structure identity</h3><p>Does the protein sit on something an EM volume can show? 2: a clear structure (nuclear envelope, mitochondrial membrane, Golgi, centriole, lysosome…). 1: a broad or mixed class (vesicles, cytoskeleton, chromosome, cell projection). 0: diffuse (cytosol, nucleoplasm) or no location.</p>
   <h3>Sources agree</h3><p>2: HPA and UniProt put it in the same compartment family. 1: only one of them has a location. 0: they disagree.</p>
   <h3>HPA antibody</h3><p>HPA immunofluorescence reliability: 2 for Enhanced or Supported, 1 for Approved, 0 for Uncertain or no IF data. Proteins with good antibodies elsewhere can score 0 here.</p>
@@ -156,7 +251,7 @@
   <h3>Tagged line exists</h3><p>2 if OpenCell (HEK293T) or the Allen Cell Collection (hiPSC) already has an endogenously tagged line, 1 if not.</p>
 </div></div>
 
-<div class="modal" id="m-score"><div class="box"><button class="close">×</button>
+<div class="modal" id="m-score"><div class="box"><button class="close" aria-label="Close">×</button>
   <h2>How the table is made</h2>
   <p>The list is every reviewed human protein in UniProt (20,429) plus every gene with HPA subcellular data not already in that set. Each protein appears once per UniProt entry, so a few genes with two entries (TMPO, for example) appear twice.</p>
   <p>Locations come from two places: HPA's immunofluorescence annotation and UniProt's subcellular location text. Each HPA location term and each UniProt keyword is mapped to whether it is a structure that can be found in an EM volume (yes, partial, no), and to one of 15 compartment families. The family is what the sidebar filters on.</p>
@@ -166,17 +261,17 @@
   <p>The antibody score only reflects HPA IF reliability. Agreement is judged by family, so "nuclear speckles" and "nuclear lamina" count as agreeing (both nuclear). Copy numbers are from one 2011 mass spectrometry study. OpenCell and Allen lines are in other cell types than U2-OS.</p>
 </div></div>
 
-<div class="modal" id="m-sources"><div class="box"><button class="close">×</button>
+<div class="modal" id="m-sources"><div class="box"><button class="close" aria-label="Close">×</button>
   <h2>Data sources</h2>
   <table>
-    <tr><th>HPA subcellular location</th><td>Human Protein Atlas v25.1, 13,603 genes with IF data. <a href="https://www.proteinatlas.org/about/download" target="_blank">proteinatlas.org</a></td></tr>
+    <tr><th>HPA subcellular location</th><td>Human Protein Atlas v25.1, 13,603 genes with IF data. <a href="https://www.proteinatlas.org/about/download" target="_blank" rel="noopener">proteinatlas.org</a></td></tr>
     <tr><th>HPA gene table</th><td>Protein class, antibodies, UniProt and Ensembl IDs. Same release.</td></tr>
     <tr><th>HPA RNA, U2OS</th><td>nTPM for the U2OS cell line, from rna_celline.tsv.</td></tr>
-    <tr><th>UniProt</th><td>Reviewed human proteome, 20,429 entries: subcellular location, transmembrane. <a href="https://www.uniprot.org" target="_blank">uniprot.org</a></td></tr>
-    <tr><th>OpenCell</th><td>Endogenously tagged lines in HEK293T, 1,310 targets. <a href="https://opencell.sf.czbiohub.org" target="_blank">opencell.sf.czbiohub.org</a></td></tr>
-    <tr><th>Allen Cell Collection</th><td>Tagged hiPSC lines. <a href="https://cell-catalog.allencell.org" target="_blank">cell-catalog.allencell.org</a></td></tr>
-    <tr><th>Copies per cell</th><td>Beck et al. 2011, Mol Syst Biol, tables S1 and S2, U2OS. <a href="https://doi.org/10.1038/msb.2011.82" target="_blank">doi 10.1038/msb.2011.82</a></td></tr>
-    <tr><th>DepMap</th><td>Public 26Q3 Chronos gene effect for U2OS (ACH-000364). <a href="https://depmap.org" target="_blank">depmap.org</a></td></tr>
+    <tr><th>UniProt</th><td>Reviewed human proteome, 20,429 entries: subcellular location, transmembrane. <a href="https://www.uniprot.org" target="_blank" rel="noopener">uniprot.org</a></td></tr>
+    <tr><th>OpenCell</th><td>Endogenously tagged lines in HEK293T, 1,310 targets. <a href="https://opencell.sf.czbiohub.org" target="_blank" rel="noopener">opencell.sf.czbiohub.org</a></td></tr>
+    <tr><th>Allen Cell Collection</th><td>Tagged hiPSC lines. <a href="https://cell-catalog.allencell.org" target="_blank" rel="noopener">cell-catalog.allencell.org</a></td></tr>
+    <tr><th>Copies per cell</th><td>Beck et al. 2011, Mol Syst Biol, tables S1 and S2, U2OS. <a href="https://doi.org/10.1038/msb.2011.82" target="_blank" rel="noopener">doi 10.1038/msb.2011.82</a></td></tr>
+    <tr><th>DepMap</th><td>Public 26Q3 Chronos gene effect for U2OS (ACH-000364). <a href="https://depmap.org" target="_blank" rel="noopener">depmap.org</a></td></tr>
   </table>
 </div></div>
 
@@ -186,12 +281,14 @@ const FAMLBL={'nuclear envelope':'Nuclear envelope','nucleolus':'Nucleolus','nuc
 const CRITS=[['score_identity','Identity','Structure identity'],['score_sources_agree','Agree','Sources agree'],['score_antibody','Antibody','HPA antibody'],['score_expressed_u2os','U2-OS','Expressed in U2-OS'],['score_copy_number','Copies','Copy number known'],['score_tag_evidence','Tagged','Tagged line exists']];
 const COLS=[['gene_name','Gene'],['em_structures','Structures'],...CRITS.map(c=>[c[0],c[1]]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
 const NUM=new Set(['score_total','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
+const CENTER=new Set(CRITS.map(c=>c[0]));
 let DATA=[],BASE=[],VIEW=[],sel=null,sortKey='score_total',sortDir=-1,shown=0;
 const S={q:'',fams:new Set(),expr:false,tag:false,copy:false,nothpa:false,tm:false,minTotal:0,crit:{}};
 const $=id=>document.getElementById(id);
 const fmtCopies=r=>{const b=/^[<>]/.test(r.copies_raw||'')?r.copies_raw[0]:'';return b+fmtNum(r.copies_per_cell_U2OS)};
 const fmtNum=v=>{if(v===''||v==null)return '';const n=+v;if(isNaN(n))return v;if(n>=1e5)return n.toExponential(1);if(n>=1000)return Math.round(n).toLocaleString('en');return (Math.round(n*10)/10).toString()};
-const dots=v=>`<span class="dots"><i class="d ${v>=1?(v>=2?'two':'one'):''}"></i><i class="d ${v>=2?'two':''}"></i></span>`;
+const mark=v=>`<span class="m v${v||0}" title="${v} of 2"><i></i><i></i></span>`;
+const strip=t=>`<span class="tot"><span class="strip">${Array.from({length:12},(_,i)=>`<i class="${i<t?'f':''}"></i>`).join('')}</span><b>${t}</b></span>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const PARTIAL=new Set(['chromosome (broad)','cytoskeleton (broad)','vesicle (unspecified)','cell projection']);
 
@@ -215,19 +312,16 @@ function apply(){
 function sortView(){const k=sortKey,d=sortDir;VIEW.sort((a,b)=>{let x=a[k],y=b[k];if(NUM.has(k)){x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*d||a.gene_name.localeCompare(b.gene_name)}return String(x).localeCompare(String(y))*d||a.gene_name.localeCompare(b.gene_name)})}
 
 function render(){
-  // family counts under current non-family filters
   const famCount={};for(const f of FAMS)famCount[f]=0;
   for(const r of BASE)for(const f of r.fams)famCount[f]=(famCount[f]||0)+1;
   for(const f of FAMS){const el=document.querySelector(`.fam[data-f="${f}"] small`);if(el)el.textContent=famCount[f].toLocaleString('en')}
-  // chart
   const hist=new Array(13).fill(0);for(const r of VIEW)hist[r.score_total]++;const mx=Math.max(1,...hist);
-  $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''}" style="height:${Math.max(1,n/mx*100)}%"><em>${n?n.toLocaleString('en'):''}</em><span>${i}</span></div>`).join('');
-  $('chartTitle').textContent=`Total score, ${VIEW.length.toLocaleString('en')} proteins in the current view`;
-  $('count').textContent=`${VIEW.length.toLocaleString('en')} of ${DATA.length.toLocaleString('en')} proteins. Click a column to sort, a row to open it.`;
-  // header
-  $('thead').innerHTML=COLS.map(([k,l])=>`<th data-k="${k}" class="${NUM.has(k)?'num':''} ${k===sortKey?'sorted':''}">${l}${k===sortKey?(sortDir<0?' ▾':' ▴'):''}</th>`).join('');
+  $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''} ${S.minTotal&&i===S.minTotal?'cut':''}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?n.toLocaleString('en'):''}</em><span>${i}</span></div>`).join('');
+  $('chartTitle').textContent=`${VIEW.length.toLocaleString('en')} proteins in the current view`;
+  $('count').innerHTML=`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins · click a column to sort, a row to open it`;
+  $('thead').innerHTML=COLS.map(([k,l])=>`<th data-k="${k}" class="${CENTER.has(k)?'c':(NUM.has(k)?'num':'')} ${k===sortKey?('sorted '+(sortDir<0?'desc':'asc')):''}">${l}</th>`).join('');
   $('tbody').innerHTML='';shown=0;$('scroll').scrollTop=0;more()}
-function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill">+${r.structs.length-2}</span>`:''}</td>${CRITS.map(c=>`<td>${dots(r[c[0]])}</td>`).join('')}<td class="num tot">${r.score_total}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
+function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${CRITS.map(c=>`<td class="c">${mark(r[c[0]])}</td>`).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
 $('scroll').addEventListener('scroll',e=>{const s=e.target;if(s.scrollTop+s.clientHeight>s.scrollHeight-600&&shown<VIEW.length)more()});
 $('thead').addEventListener('click',e=>{const th=e.target.closest('th');if(!th)return;const k=th.dataset.k;if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=NUM.has(k)?-1:1}sortView();render()});
 $('tbody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(!tr)return;sel=VIEW[+tr.dataset.i];document.querySelectorAll('#tbody tr.sel').forEach(x=>x.classList.remove('sel'));tr.classList.add('sel');showDetail(sel)});
@@ -235,28 +329,28 @@ $('tbody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(!tr)r
 function cleanUni(s){return s.replace(/SUBCELLULAR LOCATION:\s*/,'').replace(/\{[^}]*\}/g,'').replace(/\{[^}]*$/,'').replace(/\s*;\s*/g,'; ').replace(/\s+\./g,'.').replace(/\s{2,}/g,' ').trim()}
 function showDetail(r){
   const why={
-    score_identity:`HPA: ${r.hpa_main||'no IF location'}${r.hpa_additional?' (also '+r.hpa_additional+')':''}. UniProt: ${r.uniprot_location?cleanUni(r.uniprot_location).slice(0,220)+(r.uniprot_location.length>=220?'…':''):'no location'}.`,
+    score_identity:`<em>HPA:</em> ${esc(r.hpa_main||'no IF location')}${r.hpa_additional?' (also '+esc(r.hpa_additional)+')':''}. <em>UniProt:</em> ${r.uniprot_location?esc(cleanUni(r.uniprot_location).slice(0,220))+(r.uniprot_location.length>=220?'…':''):'no location'}.`,
     score_sources_agree:r.score_sources_agree===2?'HPA and UniProt place it in the same compartment family.':r.score_sources_agree===1?'Only one source gives a structure, so nothing to compare.':'HPA and UniProt put it in different families.',
-    score_antibody:r.hpa_reliability?`HPA IF reliability: ${r.hpa_reliability}. ${r.hpa_antibodies} antibod${r.hpa_antibodies==='1'?'y':'ies'}.`:(+r.hpa_antibodies?`HPA has ${r.hpa_antibodies} antibod${r.hpa_antibodies==='1'?'y':'ies'} but no IF location for this gene.`:'No HPA antibody for this gene.'),
+    score_antibody:r.hpa_reliability?`HPA IF reliability: ${esc(r.hpa_reliability)}. ${r.hpa_antibodies} antibod${r.hpa_antibodies==='1'?'y':'ies'}.`:(+r.hpa_antibodies?`HPA has ${r.hpa_antibodies} antibod${r.hpa_antibodies==='1'?'y':'ies'} but no IF location for this gene.`:'No HPA antibody for this gene.'),
     score_expressed_u2os:r.u2os_ntpm==null?'No U2OS RNA value in HPA.':`${fmtNum(r.u2os_ntpm)} nTPM in U2OS (HPA).`,
-    score_copy_number:r.copies_per_cell_U2OS==null?'Not measured in Beck 2011.':`${fmtCopies(r)} copies per cell in U2OS (Beck 2011)${r.mitotic_ratio?`. Mitotic over interphase ratio ${r.mitotic_ratio}`:''}.`,
-    score_tag_evidence:r.tag_lines?r.tag_lines.split(';').map(t=>t.replace('OpenCell','OpenCell (HEK293T)').replace('Allen','Allen Cell (hiPSC)')).join('; ')+'.':'No OpenCell or Allen line found.'};
+    score_copy_number:r.copies_per_cell_U2OS==null?'Not measured in Beck 2011.':`${fmtCopies(r)} copies per cell in U2OS (Beck 2011)${r.mitotic_ratio?`. Mitotic over interphase ratio ${esc(r.mitotic_ratio)}`:''}.`,
+    score_tag_evidence:r.tag_lines?esc(r.tag_lines.split(';').map(t=>t.replace('OpenCell','OpenCell (HEK293T)').replace('Allen','Allen Cell (hiPSC)')).join('; '))+'.':'No OpenCell or Allen line found.'};
   const hpaUrl=r.ensembl&&r.ensembl.startsWith('ENSG')?`https://www.proteinatlas.org/${r.ensembl}-${r.gene_name}/subcellular`:null;
-  $('detail').classList.add('open');$('detail').innerHTML=`<button class="closeD" onclick="document.getElementById('detail').classList.remove('open')">×</button><h2>${esc(r.gene_name)}</h2>
-    <div class="acc">${esc(r.uniprot||'')}${r.ensembl?' · '+esc(r.ensembl):''}<br>${r.fams.map(f=>FAMLBL[f]||f).join(', ')}</div>
-    <div class="links">${hpaUrl?`<a href="${hpaUrl}" target="_blank">HPA</a>`:''}${r.uniprot?`<a href="https://www.uniprot.org/uniprotkb/${r.uniprot}/entry" target="_blank">UniProt</a>`:''}${r.tag_lines.includes('OpenCell')?`<a href="https://opencell.sf.czbiohub.org/search?query=${r.gene_name}" target="_blank">OpenCell</a>`:''}<a href="https://depmap.org/portal/gene/${r.gene_name}?tab=overview" target="_blank">DepMap</a></div>
-    <div class="card"><h5>Score, ${r.score_total} of 12</h5><div class="sc">${CRITS.map(c=>`<span>${c[2]}</span>${dots(r[c[0]])}<span>${r[c[0]]}</span><div class="why">${esc(why[c[0]])}</div>`).join('')}</div></div>
+  $('detail').classList.add('open');$('detail').innerHTML=`<button class="closeD" onclick="document.getElementById('detail').classList.remove('open')" aria-label="Close">×</button><h2>${esc(r.gene_name)}</h2>
+    <div class="acc">${esc(r.uniprot||'')}${r.ensembl?' · '+esc(r.ensembl):''}</div>
+    <div class="fams">${r.fams.map(f=>`<span>${esc(FAMLBL[f]||f)}</span>`).join('')}</div>
+    <div class="links">${hpaUrl?`<a href="${hpaUrl}" target="_blank" rel="noopener">HPA</a>`:''}${r.uniprot?`<a href="https://www.uniprot.org/uniprotkb/${r.uniprot}/entry" target="_blank" rel="noopener">UniProt</a>`:''}${r.tag_lines.includes('OpenCell')?`<a href="https://opencell.sf.czbiohub.org/search?query=${r.gene_name}" target="_blank" rel="noopener">OpenCell</a>`:''}<a href="https://depmap.org/portal/gene/${r.gene_name}?tab=overview" target="_blank" rel="noopener">DepMap</a></div>
+    <div class="card"><h5>Score <b>${r.score_total} / 12</b></h5><div class="sc">${CRITS.map(c=>`<span class="nm">${c[2]}</span><span class="val">${mark(r[c[0]])}<b>${r[c[0]]}</b></span><div class="why">${why[c[0]]}</div>`).join('')}</div></div>
     <div class="card"><h5>Structures</h5><div>${r.structs.length?r.structs.map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join(''):'<span class="pill part">none mapped</span>'}</div></div>
     <div class="card"><h5>Other facts</h5>
       <div class="row"><span>Source</span><span>${esc(r.source)}</span></div>
-      <div class="row"><span>DepMap U2-OS effect</span><span>${r.depmap_u2os_effect?(+r.depmap_u2os_effect).toFixed(2)+(r.essentiality?', '+r.essentiality:''):'no value'}</span></div>
+      <div class="row"><span>DepMap U2-OS effect</span><span class="mono">${r.depmap_u2os_effect?(+r.depmap_u2os_effect).toFixed(2)+(r.essentiality?', '+esc(r.essentiality):''):'no value'}</span></div>
       <div class="row"><span>HPA cell cycle</span><span>${esc(r.hpa_cell_cycle||'not flagged')}</span></div>
       <div class="row"><span>Transmembrane</span><span>${r.transmembrane==='yes'?'yes':'no'}</span></div>
-      <div class="row"><span>Antibody RRIDs</span><span>${esc(r.antibody_rrid.replace(/:\s*/g,'').replace(/,\s*/g,', ')||'none')}</span></div>
+      <div class="row"><span>Antibody RRIDs</span><span class="mono">${esc(r.antibody_rrid.replace(/:\s*/g,'').replace(/,\s*/g,', ')||'none')}</span></div>
       <div class="row"><span>Protein class</span><span>${esc(r.protein_class||'')}</span></div>
     </div>`}
 
-// sidebar build
 $('fams').innerHTML=FAMS.map(f=>`<div class="fam" data-f="${f}"><span><i class="sw"></i>${FAMLBL[f]}</span><small></small></div>`).join('');
 $('fams').addEventListener('click',e=>{const d=e.target.closest('.fam');if(!d)return;const f=d.dataset.f;if(S.fams.has(f))S.fams.delete(f);else S.fams.add(f);d.classList.toggle('on');apply()});
 $('crits').innerHTML=CRITS.map(c=>`<div class="crit" data-k="${c[0]}"><span>${c[2]}</span><span class="seg"><b data-v="0" class="on">any</b><b data-v="1">≥1</b><b data-v="2">2</b></span></div>`).join('');
@@ -267,6 +361,7 @@ $('minTotal').addEventListener('input',e=>{S.minTotal=+e.target.value;$('minTota
 $('reset').addEventListener('click',()=>{S.q='';$('q').value='';S.fams.clear();document.querySelectorAll('.fam.on').forEach(x=>x.classList.remove('on'));for(const [id,k] of [['f-expr','expr'],['f-tag','tag'],['f-copy','copy'],['f-nothpa','nothpa'],['f-tm','tm']]){S[k]=false;$(id).checked=false}S.minTotal=0;$('minTotal').value=0;$('minTotalLbl').textContent='any';S.crit={};document.querySelectorAll('.crit b').forEach(b=>b.classList.toggle('on',b.dataset.v==='0'));apply()});
 document.querySelectorAll('[data-modal]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.modal).classList.add('open')));
 document.querySelectorAll('.modal').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('close'))m.classList.remove('open')})});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'))});
 $('dl').addEventListener('click',()=>{const keys=Object.keys(DATA[0]).filter(k=>!k.startsWith('_')&&k!=='fams'&&k!=='structs');const lines=[keys.join('\t'),...VIEW.map(r=>keys.map(k=>r[k]??'').join('\t'))];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/tab-separated-values'}));a.download='anchor_scores_filtered.tsv';a.click()});
 
 fetch('anchor_scores.tsv').then(r=>r.text()).then(t=>{DATA=parseTSV(t);$('subtitle').textContent=`${DATA.length.toLocaleString('en')} proteins scored on six criteria. Nothing excluded. A guide, not the decision.`;apply()}).catch(e=>{$('subtitle').textContent='Could not load anchor_scores.tsv';console.error(e)});
