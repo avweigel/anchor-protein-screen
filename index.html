@@ -5,6 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{const t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
   /* Layout: fixed three-column instrument panel. Header band is the one bold element; everything else is quiet. */
   :root{
@@ -31,12 +32,19 @@
     color-scheme:light;
   }
   @media (prefers-color-scheme:dark){
-    :root{
+    :root:not([data-theme="light"]){
       --accent:#5fb8bf;--accent-ink:#8fd3d8;--accent-soft:#1f5257;--accent-tint:#13343a;--accent-glow:#c3df6a;
       --ink:#e6eeee;--ink-2:#a9bcbe;--ink-3:#78908f;--line:#243a3d;--line-2:#1c3033;--bg:#0d1a1c;--panel:#122225;--panel-2:#172b2e;--empty:#1e3236;
       --band:#081e22;--band-ink:#eef5f5;--band-mute:#7fa3a6;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.7);
       color-scheme:dark;
     }
+  }
+  :root[data-theme="dark"]{
+      --accent:#5fb8bf;--accent-ink:#8fd3d8;--accent-soft:#1f5257;--accent-tint:#13343a;--accent-glow:#c3df6a;
+      --ink:#e6eeee;--ink-2:#a9bcbe;--ink-3:#78908f;--line:#243a3d;--line-2:#1c3033;--bg:#0d1a1c;--panel:#122225;--panel-2:#172b2e;--empty:#1e3236;
+      --band:#081e22;--band-ink:#eef5f5;--band-mute:#7fa3a6;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.7);
+      color-scheme:dark;
+  }
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -56,6 +64,12 @@
   header nav button:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.34)}
   header nav button.primary{background:var(--band-ink);color:var(--band);border-color:var(--band-ink);font-weight:500}
   header nav button.primary:hover{background:#fff}
+  header nav .theme{width:32px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+  header nav .theme svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  header nav .theme .moon{display:none}
+  :root[data-theme="dark"] header nav .theme .sun{display:none}
+  :root[data-theme="dark"] header nav .theme .moon{display:block}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header nav .theme .sun{display:none}:root:not([data-theme="light"]) header nav .theme .moon{display:block}}
 
   /* Sidebar */
   aside{background:var(--panel);border-right:1px solid var(--line);padding:18px 18px 24px;overflow:auto}
@@ -202,6 +216,7 @@
       <button data-modal="m-score">How the score is made</button>
       <button data-modal="m-sources">Data sources</button>
       <button id="dl" class="primary">Download filtered TSV</button>
+      <button id="theme" class="theme" title="Switch light / dark" aria-label="Switch light or dark theme"><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
     </nav>
   </header>
 
@@ -361,6 +376,7 @@ $('minTotal').addEventListener('input',e=>{S.minTotal=+e.target.value;$('minTota
 $('reset').addEventListener('click',()=>{S.q='';$('q').value='';S.fams.clear();document.querySelectorAll('.fam.on').forEach(x=>x.classList.remove('on'));for(const [id,k] of [['f-expr','expr'],['f-tag','tag'],['f-copy','copy'],['f-nothpa','nothpa'],['f-tm','tm']]){S[k]=false;$(id).checked=false}S.minTotal=0;$('minTotal').value=0;$('minTotalLbl').textContent='any';S.crit={};document.querySelectorAll('.crit b').forEach(b=>b.classList.toggle('on',b.dataset.v==='0'));apply()});
 document.querySelectorAll('[data-modal]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.modal).classList.add('open')));
 document.querySelectorAll('.modal').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('close'))m.classList.remove('open')})});
+$('theme').addEventListener('click',()=>{const root=document.documentElement;const sysDark=matchMedia('(prefers-color-scheme: dark)').matches;const cur=root.dataset.theme||(sysDark?'dark':'light');const next=cur==='dark'?'light':'dark';root.dataset.theme=next;try{localStorage.setItem('theme',next)}catch(e){}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'))});
 $('dl').addEventListener('click',()=>{const keys=Object.keys(DATA[0]).filter(k=>!k.startsWith('_')&&k!=='fams'&&k!=='structs');const lines=[keys.join('\t'),...VIEW.map(r=>keys.map(k=>r[k]??'').join('\t'))];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/tab-separated-values'}));a.download='anchor_scores_filtered.tsv';a.click()});
 
