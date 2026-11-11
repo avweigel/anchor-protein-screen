@@ -15,3 +15,5 @@ Downloaded 5 Nov 2026 for scoring every human protein with subcellular data agai
 - beck2011_U2OS_mitotic_copy_ratio.tsv: Table S2 of the same paper, copy-number ratio control vs mitotically synchronized cells
 
 All inputs are now in place (5 Nov 2026, 22:30).
+
+- screens/: loss-of-function screens for the proposed Functional column (JUMP, PERISCOPE, Funk 2022, MitoCheck, Perturb-seq, BioGRID ORCS), added 11 Nov 2026. See screens/README.md; rebuilt by fetch_screens.py.

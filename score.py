@@ -70,6 +70,72 @@ def fam(s):
         elif k in t: return f
     return 'other'
 def key(s): return fam(s)
+
+# --- loss-of-function screens (proposed criterion, from Jan, Space WG 11 Nov 2026). Extracts made by fetch_screens.py
+S=D+'screens/'
+hg=list(csv.DictReader(open(S+'extract_hgnc.tsv'),delimiter='\t'))
+cur={r['symbol'] for r in hg}; by_entrez={r['entrez_id']:r['symbol'] for r in hg if r['entrez_id']}
+by_ens={r['ensembl_gene_id']:r['symbol'] for r in hg if r['ensembl_gene_id']}
+by_acc={}; prev=collections.defaultdict(set); alias=collections.defaultdict(set)
+for r in hg:
+    for a in r['uniprot_ids'].split('|'):
+        if a: by_acc.setdefault(a,r['symbol'])
+    for p in r['prev_symbol'].split('|'):
+        if p: prev[p].add(r['symbol'])
+    for p in r['alias_symbol'].split('|'):
+        if p: alias[p].add(r['symbol'])
+def norm(sym,entrez='',ens=''):
+    """current HGNC symbol for a screen's gene label"""
+    e=str(entrez).split('.')[0]
+    if e and e in by_entrez: return by_entrez[e]
+    if ens and ens in by_ens: return by_ens[ens]
+    if sym in cur: return sym
+    if len(prev.get(sym,()))==1: return next(iter(prev[sym]))
+    if len(alias.get(sym,()))==1: return next(iter(alias[sym]))
+    return sym
+def ext(name): return list(csv.DictReader(open(S+'extract_'+name+'.tsv'),delimiter='\t'))
+FX=collections.defaultdict(dict)
+for r in ext('jump_crispr_u2os'):
+    if r['corrected_p']=='': continue
+    FX[norm(r['gene'],r['entrez'])]['jump']=float(r['corrected_p'])<0.05
+for r in ext('periscope'):
+    hits=[n for c,n in (('HeLa_DMEM','HeLa'),('HeLa_HPLM','HeLa HPLM'),('A549','A549')) if r[c]=='1']
+    FX[norm(r['gene'])]['periscope']=sorted(set(hits),key=hits.index)
+for r in ext('funk2022_hela'):
+    FX[norm(r['gene'],r['entrez'])]['funk']=(r['hit']=='1', int(r['n_sig_features']), r['mitotic_index_high']=='1')
+for r in ext('mitocheck_hela'):
+    FX[norm(r['gene'],'',r['ensembl'])]['mitocheck']=(r['reproducible_phenotype']=='1' or r['validated_mitotic_hit']=='1', r['phenotypes'])
+for nm,lab in (('replogle_k562_gwps','K562'),('replogle_rpe1','RPE1')):
+    for r in ext(nm):
+        FX[norm(r['gene'],'',r['ensembl'])].setdefault('perturbseq',{})[lab]=r['hit']=='1'
+for r in ext('orcs_genes'):
+    FX[norm(r['gene'],r['entrez'])]['orcs']={k:int(r[k]) for k in ('u2os_hit','u2os_tested','hela_hit','hela_tested','all_hit','all_tested')}
+def function_cols(name,acc,dep_effect):
+    k=by_acc.get(acc) or norm(name)
+    f=FX.get(k,{})
+    def yn(b): return 'hit' if b else 'no'
+    jump=yn(f['jump']) if 'jump' in f else ''
+    per=('hit: '+', '.join(f['periscope']) if f['periscope'] else 'no') if 'periscope' in f else ''
+    funk=''
+    if 'funk' in f:
+        h,n,mi=f['funk']; funk=(f'hit: {n} of 32 features'+(', mitotic arrest' if mi else '')) if h else 'no'
+    mc=''
+    if 'mitocheck' in f:
+        h,ph=f['mitocheck']; mc=('hit: '+ph if ph else 'hit') if h else 'no'
+    ps=''
+    if 'perturbseq' in f:
+        hits=[l for l,v in f['perturbseq'].items() if v]; ps=('hit: '+', '.join(hits)) if hits else 'no'
+    o=f.get('orcs'); orcs=(f"U2OS {o['u2os_hit']}/{o['u2os_tested']}, HeLa {o['hela_hit']}/{o['hela_tested']}, all {o['all_hit']}/{o['all_tested']}") if o else ''
+    dep=('hit' if float(dep_effect)<-0.5 else 'no') if dep_effect!='' else ''
+    ou=(yn(o['u2os_hit']>0) if o['u2os_tested'] else '') if o else ''
+    oh=(yn(o['hela_hit']>=3) if o['hela_tested'] else '') if o else ''   # HeLa: hit in 3 or more screens, so one noisy screen is not enough
+    imaging=[x for x in (jump,per,funk,mc) if x]; img_hit=sum(x.startswith('hit') for x in imaging)
+    allx=[x for x in (jump,per,funk,mc,ps,dep,ou,oh) if x]; n_hit=sum(x.startswith('hit') for x in allx)
+    # 2: imaging phenotype in U2OS (JUMP) seen again in another screen, or imaging phenotypes in two screens
+    # 1: a loss-of-function phenotype in any one screen. 0: no phenotype where tested, or never tested
+    score=2 if ((jump=='hit' and n_hit>=2) or img_hit>=2) else (1 if n_hit else 0)
+    return dict(score_function=score,fx_screens_hit=f'{n_hit} of {len(allx)}',fx_jump_u2os=jump,fx_periscope=per,fx_funk2022_hela=funk,
+                fx_mitocheck_hela=mc,fx_perturbseq=ps,fx_orcs=orcs)
 out=[]
 for src,u,enss in rows:
     h=None; g=''
@@ -112,14 +178,18 @@ for src,u,enss in rows:
         compartment_family=';'.join(families),em_structures=';'.join(structures),score_identity=identity,score_sources_agree=agree,score_antibody=ab,score_expressed_u2os=expr,score_copy_number=quant,score_tag_evidence=taggable,
         score_total=total,hpa_main=';'.join(main),hpa_additional=';'.join(add),hpa_reliability=rel,uniprot_location=uloc[:300],transmembrane='yes' if (u and u['Transmembrane']) else '',
         tag_lines=';'.join(tag),copies_per_cell_U2OS=cp,mitotic_ratio=round(mr,2) if mr else '',u2os_ntpm=ntpm if ntpm is not None else '',
-        hpa_cell_cycle=cc,depmap_u2os_effect=ge,essentiality=ess,antibody_rrid=f.get('Antibody RRID',''),protein_class=f.get('Protein class','')))
+        hpa_cell_cycle=cc,depmap_u2os_effect=ge,essentiality=ess,antibody_rrid=f.get('Antibody RRID',''),protein_class=f.get('Protein class',''),
+        **function_cols(name,acc,ge)))
+    out[-1]['score_total_with_function']=total+out[-1]['score_function']
 out.sort(key=lambda o:(-o['score_total'],o['gene_name']))
 with open('anchor_scores.tsv','w',newline='') as fh:
     w=csv.DictWriter(fh,fieldnames=list(out[0].keys()),delimiter='\t'); w.writeheader(); w.writerows(out)
 C=collections.Counter(o['source'] for o in out); print(len(out),'proteins', dict(C))
 print('score_total distribution:'); 
 for s,n in sorted(collections.Counter(o['score_total'] for o in out).items(),reverse=True): print(f'  {s:2d}: {n}')
+print('function 2/1/0:',[sum(o['score_function']==k for o in out) for k in (2,1,0)])
+print('with function, 13 or 14:',sum(o['score_total_with_function']>=13 for o in out))
 print('identity 2:',sum(o['score_identity']==2 for o in out),' 1:',sum(o['score_identity']==1 for o in out))
 rows={o['gene_name']:o for o in out}
 for n in ['NUP107','NUP98','LAMP1','CENPA','TOMM20','LMNB1','SEC61B','PEX14','ZYX','GOLGA2','LMNA','NUP96']:
-    o=rows.get(n); print(n,'missing' if not o else f"total={o['score_total']} id={o['score_identity']} agree={o['score_sources_agree']} ab={o['score_antibody']} expr={o['score_expressed_u2os']} cp={o['score_copy_number']} tag={o['score_tag_evidence']} src={o['source']} struct={o['em_structures'][:45]}")
+    o=rows.get(n); print(n,'missing' if not o else f"total={o['score_total']} id={o['score_identity']} agree={o['score_sources_agree']} ab={o['score_antibody']} expr={o['score_expressed_u2os']} cp={o['score_copy_number']} tag={o['score_tag_evidence']} fx={o['score_function']} hits={o['fx_screens_hit']} src={o['source']} struct={o['em_structures'][:45]}")

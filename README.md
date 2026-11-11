@@ -13,6 +13,7 @@ The page is served from this repository with GitHub Pages: open `index.html` on 
 - `index.html`: the explorer, one file, no build step.
 - `anchor_scores.tsv`: the table, one row per UniProt entry (20,661 rows).
 - `score.py`: builds the table from `data/`. Run `python3 score.py` in this folder.
+- `fetch_screens.py`: downloads the loss-of-function screens and writes small per-gene extracts to `data/screens/` (needs network, pandas, openpyxl, pyarrow, h5py; big raw files go to `data/screens/raw/`, not committed). Only needed to refresh the screens; `score.py` reads the extracts.
 - `hpa_em_lookup.csv`: how each HPA location term maps to an EM-visible structure (yes, partial, no).
 - `data/`: the inputs, see `data/README.md` for sources and versions.
 
@@ -28,5 +29,11 @@ Six criteria, each 0 to 2, summed with equal weight to a total out of 12.
 | Expressed in U2-OS | 10 nTPM or more | 1 nTPM or more | below 1 |
 | Copy number known | in Beck 2011 | not measured | |
 | Tagged line exists | OpenCell or Allen line | none | |
+
+A seventh column, **Functional (proposed)**, was suggested at the Space WG on 11 Nov 2026: does losing the protein change the cell in published loss-of-function screens? It is shown in the table but is not in `score_total`; `score_total_with_function` (out of 14) includes it, and the page has a switch for it.
+
+| Functional (proposed) | imaging phenotype in U2-OS (JUMP) seen again in another screen, or in two imaging screens | phenotype in one screen of any kind | no phenotype where tested, or never tested |
+
+Screens: JUMP Cell Painting (CRISPR, U2-OS), PERISCOPE (CRISPR, HeLa and A549), Funk 2022 (CRISPR, HeLa), MitoCheck (RNAi, HeLa), Perturb-seq (CRISPRi, K562 and RPE1), DepMap 26Q3 (U2-OS fitness), BioGRID ORCS 2.0.18 (U2-OS and HeLa CRISPR screens). Per-screen results are in the `fx_*` columns.
 
 Details and known limits are in the page under "How the score is made".
