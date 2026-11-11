@@ -302,12 +302,62 @@
   .detail .closeD{display:block;float:right;font-size:20px;border:none;background:none;color:var(--ink-3);cursor:pointer;line-height:1}
 .imgs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.imgs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;display:block;background:#000}.imgmsg{grid-column:1/-1;font-size:12px;opacity:.75}.imgcap{font-size:11px;opacity:.7;margin:6px 0 0;line-height:1.4}
 .caret{width:18px;height:18px;margin:0 4px 0 -4px;padding:0;border:none;background:none;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;color:var(--ink-3)}.caret svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}.caret:hover{color:var(--ink);background:var(--panel-2)}.caret.open svg{transform:rotate(90deg)}.caret.none{cursor:default;pointer-events:none}.fam .caret{flex:none}.fam .lab{display:flex;align-items:center;flex:1;min-width:0}.fam .lab em{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fam small{flex:none;margin-left:8px}.subs{margin:2px 0 6px 13px;padding-left:12px;border-left:1px solid var(--line)}.fam.sub{font-size:12px;padding:3px 6px;color:var(--ink-2)}.fam.sub .sw{width:10px;height:10px;margin-right:8px}.fam.sub small{font-size:10.5px}.fam.sub.on{color:var(--accent-ink)}#q{width:100%;max-width:100%;display:block}.foot{gap:16px;flex-wrap:wrap;align-items:center}.fam.part .sw{background:linear-gradient(135deg,var(--accent) 50%,transparent 50%);border-color:var(--accent)}
+
+.mfilt,.mclose,.mshow{display:none}
+@media (max-width:760px){
+  .app{display:block;height:auto;min-height:100vh}
+  header{position:sticky;top:0;z-index:70;flex-wrap:wrap;height:auto;padding:10px 14px 8px;gap:8px 10px}
+  header .brand{flex:1;min-width:0}
+  header h1{font-size:16px}
+  header .ver,header .sub{display:none}
+  .mfilt{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:500;color:var(--band);background:var(--band-ink);border:none;border-radius:7px;padding:7px 12px;cursor:pointer}
+  .mfilt svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+  .mfilt b{font-size:11px;background:var(--accent);color:#fff;border-radius:999px;padding:1px 7px;margin-left:2px}
+  header nav{order:3;width:100%;margin:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  header nav::-webkit-scrollbar{display:none}
+  header nav button{white-space:nowrap;padding:6px 10px;flex:none}
+  header nav #dl{display:none}
+  aside{position:fixed;top:0;left:0;bottom:0;width:min(340px,88vw);z-index:90;transform:translateX(-102%);transition:transform .22s;box-shadow:6px 0 30px rgba(0,0,0,.3);padding:16px 18px 90px;overflow:auto}
+  aside.open{transform:none}
+  .ftop{align-items:center;gap:10px}
+  .ftop .clear{margin-left:auto}
+  .mclose{display:block;font-size:26px;line-height:1;border:none;background:none;color:var(--ink-2);cursor:pointer;padding:0 2px}
+  .mshow{display:block;position:fixed;left:18px;bottom:16px;width:calc(min(340px,88vw) - 36px);z-index:91;font:inherit;font-size:14px;font-weight:600;padding:12px;border-radius:9px;border:none;background:var(--accent);color:#fff;cursor:pointer;box-shadow:0 6px 20px -6px rgba(0,0,0,.4)}
+  aside:not(.open)~.scrim,aside:not(.open) .mshow{display:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:85}
+  .fam{padding:7px 6px}.fam.sub{padding:6px 6px}
+  .caret{width:28px;height:28px}
+  main{padding:12px 12px 16px;overflow:visible;gap:10px}
+  .chart{padding:10px 12px 8px}
+  .bars{height:60px;gap:3px}
+  .bars em{font-size:9px}
+  .key .hint{display:none}
+  .chart .ch small{display:none}
+  .chart .ch{margin-bottom:14px}
+  .key{gap:6px 12px}
+  .tbl{height:calc(100vh - 150px);height:calc(100dvh - 150px);min-height:360px;flex:none}
+  .scroll{overflow:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:700px}
+  tr:not(.grp) th:first-child,td.g{position:sticky;left:0;z-index:2;background:var(--panel);box-shadow:1px 0 0 var(--line)}
+  tr:not(.grp) th:first-child{z-index:3}
+  tr.sel td.g{background:var(--accent-tint)}
+  td.st{max-width:96px}
+  .foot{font-size:11px;padding:8px 12px;gap:6px}
+  .detail{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw!important;z-index:95;padding:18px 18px 40px;transform:translateX(100%)}
+  .detail.open{transform:none}
+  .detail .closeD{position:sticky;top:0;font-size:30px;z-index:2}
+  .modal{align-items:flex-end;z-index:100}
+  .modal .box{width:100%;max-width:none;max-height:90vh;max-height:90dvh;border-radius:14px 14px 0 0;padding:20px 18px 28px;font-size:14px}
+  .modal table{display:block;overflow-x:auto}
+  .pop{max-width:calc(100vw - 24px)}
+}
 </style></head>
 <body>
 <div class="app">
   <header>
     <div class="brand"><h1>Anchor protein explorer</h1><span class="ver">Alpha Cell · U2-OS</span></div>
     <span class="sub" id="subtitle">Loading…</span>
+    <button class="mfilt" id="mfilt" aria-label="Open filters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filters<b id="mfiltN" hidden></b></button>
     <nav>
       <button data-modal="m-criteria">Criteria</button>
       <button data-modal="m-score">How the score is made</button>
@@ -318,7 +368,7 @@
   </header>
 
   <aside>
-    <div class="ftop"><h3>Filters</h3><button class="clear" id="reset" hidden>Clear all</button></div>
+    <div class="ftop"><h3>Filters</h3><button class="clear" id="reset" hidden>Clear all</button><button class="mclose" id="mclose" aria-label="Close filters">×</button></div>
     <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" id="q" placeholder="Gene name or UniProt ID"></div>
     <h3>Compartment family</h3>
       <p class="fhint">Open a family with the arrow to pick single structures.</p>
@@ -335,7 +385,9 @@
     <h3>Other</h3>
     <label class="chk"><input type="checkbox" id="f-nothpa"> Not in HPA, or no HPA IF data</label>
     <label class="chk"><input type="checkbox" id="f-tm"> Transmembrane</label>
+    <button class="mshow" id="mshow">Show proteins</button>
   </aside>
+  <div class="scrim" id="scrim" hidden></div>
 
   <main>
     <div class="chart">
@@ -447,7 +499,7 @@ function apply(){
     return true};
   BASE=DATA.filter(base);
   VIEW=(S.fams.size||S.structs.size)?BASE.filter(r=>r.fams.some(f=>S.fams.has(f))||r.structs.some(x=>S.structs.has(x))):BASE;
-  sortView();syncSidebar();renderChips();render()}
+  sortView();syncSidebar();renderChips();render();if(window.__mobileFiltersSync)window.__mobileFiltersSync()}
 function activeFilters(){
   const a=[];
   if(S.q.trim())a.push({t:`name <b>${esc(S.q.trim())}</b>`,off:()=>{S.q=''}});
@@ -491,7 +543,7 @@ function render(){
   const stCount={};for(const r of BASE)for(const x of r.structs)stCount[x]=(stCount[x]||0)+1;
   document.querySelectorAll('.fam.sub').forEach(d=>{d.querySelector('small').textContent=(stCount[d.dataset.s]||0).toLocaleString('en')});
   const hist=new Array(13).fill(0);for(const r of VIEW)hist[r.score_total]++;const mx=Math.max(1,...hist);
-  $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''} ${S.minTotal&&i===S.minTotal?'cut':''}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?n.toLocaleString('en'):''}</em><span>${i}</span></div>`).join('');
+  $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''} ${S.minTotal&&i===S.minTotal?'cut':''}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?(n>=1000&&innerWidth<760?(n/1000).toFixed(1).replace(/\.0$/,'')+'k':n.toLocaleString('en')):''}</em><span>${i}</span></div>`).join('');
   $('chartTitle').textContent=`${VIEW.length.toLocaleString('en')} proteins in the current view`;
   $('count').innerHTML=(activeFilters().length?`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins match`:`<span class="mono">${DATA.length.toLocaleString('en')}</span> proteins`)+' · click a heading to sort, shift-click to add a level, a row to open';
   const TIP=Object.fromEntries(CRITS.map(c=>[c[0],c[2]+'. '+c[3]]));TIP.score_total='Sum of the six columns, equal weight. 2 to 12 in practice, since two columns never give 0.';TIP.copies_per_cell_U2OS='Copies per cell in U2-OS, Beck et al. 2011.';TIP.em_structures='Structures the protein is annotated on, from HPA and UniProt. Dashed means a broad class.';
@@ -569,6 +621,14 @@ function showDetail(r){
 
 $('key').innerHTML=`<span class="hint">Headings are the proposed criteria; each column under them is one dataset.</span><span>${mark(2)} yes</span><span>${mark(1)} in part</span><span>${mark(0)} no, or unknown</span><span class="hint">Hover a heading for what it asks; the funnel filters that column.</span>`;
 $('intro').innerHTML=`<h2>What this is</h2><p>Anchor proteins are a small set, 5 to 10, tagged in U2-OS so the same proteins can be found across datasets: in our light microscopy and EM, and in data that already exists, such as HPA, OpenCell and copy-number studies. They are the link between those datasets.</p><p>The table is the UniProt reviewed human proteome (20,429 entries) plus genes with HPA subcellular data that are not in it, 20,661 rows in all, scored on what public databases already say.</p><p>The five proposed criteria, and what the data can and cannot answer:</p><dl>${GROUPS.map(g=>`<dt>${g.label}</dt><dd><span class="ask">${esc(g.ask)}</span> ${esc(g.data)}</dd>`).join('')}</dl><p>Each dataset column is scored 0, 1 or 2. The total is the plain sum (2 to 12 in practice, since two columns never give 0), so Identity, with three columns, weighs more than the others. Weighting, and the final choice, is for the working group.</p><p>Where this goes: the working group narrows this table to a shorter list, we score Imageable ourselves on that list, as microscopists, and the 5 to 10 anchors come out of both.</p><p class="next">Click a row to see where its scores come from, with links to the sources.</p>`;
+
+(function(){const a=document.querySelector('aside'),sc=$('scrim');
+ const open=()=>{a.classList.add('open');sc.hidden=false;document.body.style.overflow='hidden'};
+ const close=()=>{a.classList.remove('open');sc.hidden=true;document.body.style.overflow=''};
+ $('mfilt').addEventListener('click',open);$('mclose').addEventListener('click',close);$('mshow').addEventListener('click',close);sc.addEventListener('click',close);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&a.classList.contains('open'))close()});
+ window.__mobileFiltersSync=()=>{const n=activeFilters().length;const b=$('mfiltN');b.hidden=!n;b.textContent=n;$('mshow').textContent=`Show ${VIEW.length.toLocaleString('en')} protein${VIEW.length===1?'':'s'}`};
+})();
 let INTRO_HTML=$('detail').innerHTML;
 function clearDetail(){sel=null;document.querySelectorAll('#tbody tr.sel').forEach(x=>x.classList.remove('sel'));const d=$('detail');d.classList.remove('open');d.innerHTML=INTRO_HTML}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sel&&!document.querySelector('.modal.open, dialog[open]'))clearDetail()});
