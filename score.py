@@ -174,6 +174,13 @@ def complex_cols(acc):
         complex_stoich_known='yes' if any(CPX[c]['stoich'] for c in ids) else '',
         complexes=' | '.join(f"{c}~{CPX[c]['name']}~{CPX[c]['n']}~{CPX[c]['mda']:.3f}~{'1' if CPX[c]['stoich'] else '0'}" for c in ids[:8]),
         uniprot_subunit=subunit.get(acc,'').replace('\t',' '))
+# --- Imageable: imaging literature (Europe PMC; built by fetch_literature.py). 2: 3+ papers, 1: 1-2, 0: none
+LIT={r['gene']:r for r in csv.DictReader(open(D+'lit/imaging_counts.tsv'),delimiter='\t')}
+def lit_cols(name):
+    r=LIT.get(name)
+    if not r: return dict(score_imaging_lit=0,lit_imaging_papers='',lit_em_papers='',lit_ambiguous_symbol='')
+    n=int(r['imaging_papers'])
+    return dict(score_imaging_lit=2 if n>=3 else (1 if n>=1 else 0),lit_imaging_papers=n,lit_em_papers=int(r['em_papers']),lit_ambiguous_symbol=r['ambiguous_symbol'])
 out=[]
 for src,u,enss in rows:
     h=None; g=''
@@ -211,13 +218,14 @@ for src,u,enss in rows:
     d=dep.get(name,{}); ge=d.get('U2OS_gene_effect','')
     ess=('essential' if float(ge)<-1 else 'fitness' if float(ge)<-0.5 else 'neutral') if ge else ''
     cc=h['Cell cycle dependency'] if h else ''; mr=mit.get(acc)
-    total=identity+agree+ab+expr+quant+taggable
+    six=identity+agree+ab+expr+quant+taggable
+    lc=lit_cols(name); total=six+lc['score_imaging_lit']
     out.append(dict(gene_name=name,uniprot=acc,ensembl=g,source=('UniProt+HPA' if (u and h) else ('UniProt, HPA has antibody but no IF location' if (u and f.get('Antibody RRID')) else ('UniProt, in HPA but no antibody' if (u and f) else ('UniProt only, not in HPA' if u else 'HPA only')))),hpa_antibodies=len([a for a in f.get('Antibody RRID','').split(',') if a.strip()]) if f else 0,
         compartment_family=';'.join(families),em_structures=';'.join(structures),score_identity=identity,score_sources_agree=agree,score_antibody=ab,score_expressed_u2os=expr,score_copy_number=quant,score_tag_evidence=taggable,
         score_total=total,hpa_main=';'.join(main),hpa_additional=';'.join(add),hpa_reliability=rel,uniprot_location=uloc[:300],transmembrane='yes' if (u and u['Transmembrane']) else '',
         tag_lines=';'.join(tag),copies_per_cell_U2OS=cp,mitotic_ratio=round(mr,2) if mr else '',u2os_ntpm=ntpm if ntpm is not None else '',
         hpa_cell_cycle=cc,depmap_u2os_effect=ge,essentiality=ess,antibody_rrid=f.get('Antibody RRID',''),protein_class=f.get('Protein class',''),
-        **function_cols(name,acc,ge),**complex_cols(acc)))
+        **function_cols(name,acc,ge),**complex_cols(acc),**lc,score_total_wg=six))
     out[-1]['score_total_with_function']=total+(out[-1]['score_function'] or 0)
 out.sort(key=lambda o:(-o['score_total'],o['gene_name']))
 with open('anchor_scores.tsv','w',newline='') as fh:
@@ -227,7 +235,8 @@ print('score_total distribution:');
 for s,n in sorted(collections.Counter(o['score_total'] for o in out).items(),reverse=True): print(f'  {s:2d}: {n}')
 print('function 2/1/0 (0 incl. not tested):',[sum(o['score_function']==k for o in out) for k in (2,1,0)], 'not tested:',sum(o['fx_screens_hit'].endswith(' of 0') for o in out))
 print('clear imaging by source:',collections.Counter(x for o in out for x in o['fx_clear_imaging'].split('; ') if x))
-print('with function, 13 or 14:',sum(o['score_total_with_function']>=13 for o in out))
+print('with function, 15 or 16:',sum(o['score_total_with_function']>=15 for o in out),' 13+:',sum(o['score_total_with_function']>=13 for o in out))
+print('imaging literature 2/1/0:',[sum(o['score_imaging_lit']==k for o in out) for k in (2,1,0)])
 print('in a curated complex:',sum(o['complex_n']>0 for o in out),' complex >=1 MDa:',sum(o['complex_max_mda']!='' and o['complex_max_mda']>=1 for o in out),' stoichiometry known:',sum(o['complex_stoich_known']=='yes' for o in out))
 print('identity 2:',sum(o['score_identity']==2 for o in out),' 1:',sum(o['score_identity']==1 for o in out))
 rows={o['gene_name']:o for o in out}

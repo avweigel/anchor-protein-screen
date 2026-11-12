@@ -36,6 +36,12 @@ A seventh column, **Functional (proposed)**, was suggested at the Space WG on 11
 
 Screens: JUMP Cell Painting (CRISPR, U2-OS), PERISCOPE (CRISPR, HeLa and A549), Funk 2022 (CRISPR, HeLa), MitoCheck (RNAi, HeLa), Perturb-seq (CRISPRi, K562 and RPE1), DepMap 26Q3 (U2-OS fitness), BioGRID ORCS 2.0.18 (U2-OS and HeLa CRISPR screens). Per-screen results are in the `fx_*` columns.
 
+## Imageable: imaging papers (scored, added 12 Nov 2026)
+
+`score_imaging_lit`: 2 if 3 or more papers, 1 if 1-2, 0 if none. A paper counts when the protein is its subject (gene symbol or HGNC full name in the title or abstract) and it uses an imaging method anywhere in the text (light or electron microscopy), searched in Europe PMC. Short or word-like symbols are searched by full name only (`lit_ambiguous_symbol`). `lit_imaging_papers` and `lit_em_papers` (electron, correlative, cryo only) are the counts. `fetch_literature.py` runs the searches (about an hour) and `python3 fetch_literature.py build` writes `data/lit/imaging_counts.tsv` and the per-letter paper lists in `lit/` that the page loads.
+
+`score_total` is now the six original criteria plus Imaging papers (out of 14); `score_total_wg` is the original six (out of 12, as shown on 11 Nov); `score_total_with_function` adds Functional (out of 16).
+
 ## Size and complexes (shown and filterable, not scored)
 
 - `protein_length`, `protein_mass_kda`: UniProt canonical sequence.
