@@ -17,3 +17,5 @@ Downloaded 5 Nov 2026 for scoring every human protein with subcellular data agai
 All inputs are now in place (5 Nov 2026, 22:30).
 
 - screens/: loss-of-function screens for the proposed Functional column (JUMP, PERISCOPE, Funk 2022, MitoCheck, Perturb-seq, BioGRID ORCS), added 11 Nov 2026. See screens/README.md; rebuilt by fetch_screens.py.
+- complexportal_9606.tsv: EBI Complex Portal, curated human complexes (members, stoichiometry, expanded participant list), downloaded 12 Nov 2026 from ftp.ebi.ac.uk/pub/databases/intact/complex/current/complextab/9606.tsv
+- uniprot_subunit.tsv: UniProt reviewed human, "Subunit structure" text (rest.uniprot.org stream, fields accession,cc_subunit), 12 Nov 2026

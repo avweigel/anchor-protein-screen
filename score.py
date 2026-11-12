@@ -142,6 +142,38 @@ def function_cols(name,acc,dep_effect):
     score=2 if clear else (1 if n_hit else 0)
     return dict(score_function=score,fx_clear_imaging='; '.join(clear),fx_screens_hit=f'{n_hit} of {len(allx)}',fx_jump_u2os=jump,fx_periscope=per,fx_funk2022_hela=funk,
                 fx_mitocheck_hela=mc,fx_perturbseq=ps,fx_orcs=orcs)
+
+# --- protein size and curated complexes (shown and filterable, not scored)
+mass_by_acc={u['Entry']:float(u['Mass']) for u in uni if u.get('Mass')}
+len_by_acc={u['Entry']:u['Length'] for u in uni}
+subunit={}
+for r in csv.DictReader(open(D+'uniprot_subunit.tsv'),delimiter='\t'):
+    t=re.sub(r'\s*\{[^}]*\}','',r['Subunit structure']).replace('SUBUNIT: ','').strip()
+    t=re.sub(r'\s*\((?:PubMed|By similarity)[^)]*\)','',t)
+    if t: subunit[r['Entry']]=(t.split('. ')[0].rstrip('.')+'.')[:220]
+CPX={}; CPX_OF=collections.defaultdict(list)
+for r in csv.DictReader(open(D+'complexportal_9606.tsv'),delimiter='\t'):
+    parts=[]
+    for tok in r['Expanded participant list'].split('|'):
+        m=re.match(r'(.+)\((\d+)\)$',tok.strip())
+        if not m: continue
+        acc=m.group(1).split('-')[0]
+        if not re.match(r'^[OPQ][0-9][A-Z0-9]{3}[0-9]$|^[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}$',acc): continue   # proteins only (skip RNA, small molecules)
+        parts.append((acc,int(m.group(2))))
+    if not parts: continue
+    accs={a for a,_ in parts}
+    stoich=all(n>0 for _,n in parts)
+    mass=sum(mass_by_acc.get(a,0)*(n if n>0 else 1) for a,n in parts)/1e6   # MDa; copies counted as 1 where stoichiometry is unknown
+    CPX[r['#Complex ac']]=dict(name=r['Recommended name'],n=len(accs),mda=mass,stoich=stoich)
+    for a in accs: CPX_OF[a].append(r['#Complex ac'])
+def complex_cols(acc):
+    ids=sorted(set(CPX_OF.get(acc,[])),key=lambda c:-CPX[c]['mda'])
+    big=ids[0] if ids else None
+    return dict(protein_length=len_by_acc.get(acc,''),protein_mass_kda=round(mass_by_acc[acc]/1000,1) if acc in mass_by_acc else '',
+        complex_n=len(ids),complex_max_mda=round(CPX[big]['mda'],3) if big else '',complex_max_min_estimate='yes' if (big and not CPX[big]['stoich']) else '',
+        complex_stoich_known='yes' if any(CPX[c]['stoich'] for c in ids) else '',
+        complexes=' | '.join(f"{c}~{CPX[c]['name']}~{CPX[c]['n']}~{CPX[c]['mda']:.3f}~{'1' if CPX[c]['stoich'] else '0'}" for c in ids[:8]),
+        uniprot_subunit=subunit.get(acc,'').replace('\t',' '))
 out=[]
 for src,u,enss in rows:
     h=None; g=''
@@ -185,7 +217,7 @@ for src,u,enss in rows:
         score_total=total,hpa_main=';'.join(main),hpa_additional=';'.join(add),hpa_reliability=rel,uniprot_location=uloc[:300],transmembrane='yes' if (u and u['Transmembrane']) else '',
         tag_lines=';'.join(tag),copies_per_cell_U2OS=cp,mitotic_ratio=round(mr,2) if mr else '',u2os_ntpm=ntpm if ntpm is not None else '',
         hpa_cell_cycle=cc,depmap_u2os_effect=ge,essentiality=ess,antibody_rrid=f.get('Antibody RRID',''),protein_class=f.get('Protein class',''),
-        **function_cols(name,acc,ge)))
+        **function_cols(name,acc,ge),**complex_cols(acc)))
     out[-1]['score_total_with_function']=total+(out[-1]['score_function'] or 0)
 out.sort(key=lambda o:(-o['score_total'],o['gene_name']))
 with open('anchor_scores.tsv','w',newline='') as fh:
@@ -196,6 +228,7 @@ for s,n in sorted(collections.Counter(o['score_total'] for o in out).items(),rev
 print('function 2/1/0 (0 incl. not tested):',[sum(o['score_function']==k for o in out) for k in (2,1,0)], 'not tested:',sum(o['fx_screens_hit'].endswith(' of 0') for o in out))
 print('clear imaging by source:',collections.Counter(x for o in out for x in o['fx_clear_imaging'].split('; ') if x))
 print('with function, 13 or 14:',sum(o['score_total_with_function']>=13 for o in out))
+print('in a curated complex:',sum(o['complex_n']>0 for o in out),' complex >=1 MDa:',sum(o['complex_max_mda']!='' and o['complex_max_mda']>=1 for o in out),' stoichiometry known:',sum(o['complex_stoich_known']=='yes' for o in out))
 print('identity 2:',sum(o['score_identity']==2 for o in out),' 1:',sum(o['score_identity']==1 for o in out))
 rows={o['gene_name']:o for o in out}
 for n in ['NUP107','NUP98','LAMP1','CENPA','TOMM20','LMNB1','SEC61B','PEX14','ZYX','GOLGA2','LMNA','NUP96']:

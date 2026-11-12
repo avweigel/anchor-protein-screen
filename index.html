@@ -111,6 +111,9 @@
   .fam.ex .xb{color:#c2410c}
   .fam.ex .sw{border-color:#c2410c;background:repeating-linear-gradient(135deg,transparent 0 3px,rgba(194,65,12,.45) 3px 4.5px)}
   .chip.ex b{text-decoration:line-through}
+  .cxl{margin:6px 0 4px}.cx{padding:5px 0;border-top:1px dotted var(--line);font-size:12.5px;line-height:1.35}.cx:first-child{border-top:none}.cx a{color:var(--accent-ink)}.cx span{display:block;font-size:11px;color:var(--ink-3);margin-top:1px}
+  .card .why{font-size:11.5px;color:var(--ink-2);line-height:1.45;margin-top:4px}.card .why em{font-style:normal;color:var(--ink-3)}
+  td .na{color:var(--ink-3)}
   @media (hover:none){.fam .xb{opacity:.7}}
   .chk{display:flex;gap:9px;align-items:flex-start;padding:4px 0;cursor:pointer;user-select:none;color:var(--ink);line-height:1.35}
   .chk input{accent-color:var(--accent);width:14px;height:14px;margin-top:2px;flex:none}
@@ -194,6 +197,9 @@
   tbody tr:hover td{background:var(--panel-2)}
   tr.sel td{background:var(--accent-tint)}
   tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  tr:not(.grp) th:first-child,td.g{position:sticky;left:0;z-index:2;background:var(--panel);box-shadow:1px 0 0 var(--line)}
+  tr:not(.grp) th:first-child{z-index:3}
+  tr.sel td.g{background:var(--accent-tint);box-shadow:inset 3px 0 0 var(--accent),1px 0 0 var(--line)}
   td.g{font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--ink);letter-spacing:.01em;max-width:104px;overflow:hidden;text-overflow:ellipsis}
   /* score marks: a two-step bar per criterion */
   .m{display:inline-flex;align-items:center;justify-content:center;width:22px;height:20px;border-radius:5px;font-family:var(--font-mono);font-size:12px;font-weight:600;vertical-align:middle;border:1px solid transparent;font-variant-numeric:tabular-nums}
@@ -347,7 +353,7 @@
   .loading{grid-column:2/4;display:flex;align-items:center;justify-content:center;color:var(--ink-3)}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  @media (max-width:1500px){td.st{max-width:90px}td.g{max-width:none;white-space:nowrap}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:0;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.02em}th.img{font-size:9.5px}tr:not(.grp) th.c[data-k]{padding-right:10px}th.c.hasf{padding-left:11px}tr:not(.grp) th[data-k]::after,tr:not(.grp) th[data-k]::before{right:2px}.fbtn{left:0}tr:not(.grp) th.num[data-k]{padding-right:12px;font-size:9.5px;letter-spacing:.03em}td.st{max-width:78px;font-size:12px;color:var(--ink-2)}td.st .pill{display:inline;border:none;background:none;padding:0;margin:0;font-size:12px;color:inherit}td.st .pill.part{color:var(--ink-3)}td.st .pill+.pill::before{content:", "}td.st .pill.more{color:var(--ink-3)}td.st .pill.more::before{content:" "}}
+  @media (max-width:1760px){td.st{max-width:90px}td.g{max-width:none;white-space:nowrap}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:0;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.02em}th.img{font-size:9.5px}tr:not(.grp) th.c[data-k]{padding-right:10px}th.c.hasf{padding-left:11px}tr:not(.grp) th[data-k]::after,tr:not(.grp) th[data-k]::before{right:2px}.fbtn{left:0}tr:not(.grp) th.num[data-k]{padding-right:12px;font-size:9.5px;letter-spacing:.03em}td.st{max-width:78px;font-size:12px;color:var(--ink-2)}td.st .pill{display:inline;border:none;background:none;padding:0;margin:0;font-size:12px;color:inherit}td.st .pill.part{color:var(--ink-3)}td.st .pill+.pill::before{content:", "}td.st .pill.more{color:var(--ink-3)}td.st .pill.more::before{content:" "}}
   @media (max-width:1300px){header .sub{display:none}}
   @media (max-width:1320px){.app{grid-template-columns:var(--lwe,250px) 1fr}#rzR{display:none}.detail{z-index:60;position:fixed;top:60px;right:0;bottom:0;width:min(var(--rw,372px),90vw);box-shadow:-6px 0 24px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
   .detail .closeD{display:block;float:right;font-size:20px;border:none;background:none;color:var(--ink-3);cursor:pointer;line-height:1}
@@ -435,6 +441,12 @@
     <p class="fhint">Or drag across the score chart.</p>
     <div class="tsel"><span>from</span><select id="selLo" aria-label="Lowest total score"></select><span>to</span><select id="selHi" aria-label="Highest total score"></select></div>
     <label class="chk"><input type="checkbox" id="f-fx" checked> Count Functional (proposed) in the total, out of 14</label>
+    <h3>Size and complexes</h3>
+    <p class="fhint">Protein mass from UniProt; complexes from the EBI Complex Portal (curated).</p>
+    <div class="cprange"><input type="text" id="mmin" inputmode="decimal" placeholder="min kDa"><span>to</span><input type="text" id="mmax" inputmode="decimal" placeholder="max kDa"></div>
+    <label class="chk"><input type="checkbox" id="f-cx"> In a curated complex</label>
+    <label class="chk"><input type="checkbox" id="f-cxbig"> In a complex of 1 MDa or more</label>
+    <label class="chk"><input type="checkbox" id="f-cxst"> Complex stoichiometry known</label>
     <h3>Other</h3>
     <label class="chk"><input type="checkbox" id="f-nothpa"> Not in HPA, or no HPA IF data</label>
     <label class="chk"><input type="checkbox" id="f-tm"> Transmembrane</label>
@@ -515,7 +527,8 @@
     <tr><th>HPA subcellular location</th><td>Human Protein Atlas v25.1, 13,603 genes with IF data. <a href="https://www.proteinatlas.org/about/download" target="_blank" rel="noopener">proteinatlas.org</a></td></tr>
     <tr><th>HPA gene table</th><td>Protein class, antibodies, UniProt and Ensembl IDs. Same release.</td></tr>
     <tr><th>HPA RNA, U2OS</th><td>nTPM for the U2OS cell line, from rna_celline.tsv.</td></tr>
-    <tr><th>UniProt</th><td>Reviewed human proteome, 20,429 entries: subcellular location, transmembrane. <a href="https://www.uniprot.org" target="_blank" rel="noopener">uniprot.org</a></td></tr>
+    <tr><th>Complex Portal</th><td>EBI Complex Portal, curated human complexes (2,533), with members and, where known, stoichiometry. Complex size is summed from UniProt subunit masses; RNA is not counted. <a href="https://www.ebi.ac.uk/complexportal" target="_blank" rel="noopener">ebi.ac.uk/complexportal</a></td></tr>
+    <tr><th>UniProt</th><td>Reviewed human proteome, 20,429 entries: subcellular location, transmembrane, length, mass, subunit notes. <a href="https://www.uniprot.org" target="_blank" rel="noopener">uniprot.org</a></td></tr>
     <tr><th>OpenCell</th><td>Endogenously tagged lines in HEK293T, 1,310 targets. <a href="https://opencell.sf.czbiohub.org" target="_blank" rel="noopener">opencell.sf.czbiohub.org</a></td></tr>
     <tr><th>Allen Cell Collection</th><td>Tagged hiPSC lines. <a href="https://cell-catalog.allencell.org" target="_blank" rel="noopener">cell-catalog.allencell.org</a></td></tr>
     <tr><th>Copies per cell</th><td>Beck et al. 2011, Mol Syst Biol, tables S1 and S2, U2OS. <a href="https://doi.org/10.1038/msb.2011.82" target="_blank" rel="noopener">doi 10.1038/msb.2011.82</a></td></tr>
@@ -546,19 +559,20 @@ const HPA_EM={"Nuclear membrane": ["yes", "nuclear envelope", "double membrane w
 const UNI_CLEAR=[["Nuclear pore complex", "nuclear pore"], ["nuclear pore", "nuclear pore"], ["Nucleus envelope", "nuclear envelope"], ["Nucleus membrane", "nuclear envelope"], ["Nucleus inner membrane", "nuclear envelope"], ["Nucleus lamina", "nuclear lamina"], ["nucleolus", "nucleolus"], ["Mitochondrion outer membrane", "mitochondrial outer membrane"], ["Mitochondrion inner membrane", "mitochondrial inner membrane"], ["Mitochondrion matrix", "mitochondrial matrix"], ["Mitochondrion membrane", "mitochondrial membrane"], ["Mitochondrion intermembrane", "mitochondrion"], ["Mitochondrion", "mitochondrion"], ["Endoplasmic reticulum membrane", "ER membrane"], ["Endoplasmic reticulum lumen", "ER lumen"], ["Endoplasmic reticulum", "ER"], ["Microsome membrane", "ER membrane"], ["trans-Golgi network", "Golgi (TGN)"], ["Golgi apparatus membrane", "Golgi membrane"], ["Golgi apparatus", "Golgi"], ["Lysosome membrane", "lysosome membrane"], ["Lysosome lumen", "lysosome lumen"], ["Lysosome", "lysosome"], ["Peroxisome membrane", "peroxisome membrane"], ["Peroxisome", "peroxisome"], ["Early endosome", "endosome"], ["Late endosome", "endosome"], ["Recycling endosome", "endosome"], ["Endosome", "endosome"], ["Lipid droplet", "lipid droplet"], ["Autophagosome", "autophagosome"], ["centriole", "centriole"], ["centrosome", "centrosome"], ["cilium basal body", "basal body"], ["kinetochore", "kinetochore"], ["centromere", "centromere"], ["Apical cell membrane", "plasma membrane"], ["Basolateral cell membrane", "plasma membrane"], ["Cell membrane", "plasma membrane"], ["tight junction", "tight junction"], ["adherens junction", "adherens junction"], ["focal adhesion", "focal adhesion"], ["Cell junction", "cell junction"], ["desmosome", "desmosome"], ["gap junction", "gap junction"], ["Midbody", "midbody"], ["spindle", "spindle"], ["microtubule", "microtubule"], ["stress fiber", "actin bundle"], ["Nucleus speckle", "nuclear speckle"], ["Cajal body", "Cajal body"], ["PML body", "PML body"]];
 const UNI_BROAD=[["Chromosome", "chromosome (broad)"], ["cytoskeleton", "cytoskeleton (broad)"], ["Cytoplasmic vesicle", "vesicle (unspecified)"], ["Cell projection", "cell projection"]];
 
-const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>[k,CRIT[k][1]]):[['_img','later']]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
-const NUM=new Set(['score_total','score_total_with_function','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
+const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>[k,CRIT[k][1]]):[['_img','later']]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell'],['protein_mass_kda','kDa'],['complex_max_mda','Complex']];
+const NUM=new Set(['score_total','score_total_with_function','copies_per_cell_U2OS','u2os_ntpm','protein_mass_kda','complex_max_mda','complex_n',...CRITS.map(c=>c[0])]);
 let FXON=true;const MAXT=()=>FXON?14:12;
 const CENTER=new Set(CRITS.map(c=>c[0]));
 let DATA=[],BASE=[],VIEW=[],HISTV=[],sel=null,shown=0;
 let SORT=[{k:'score_total',d:-1}];
 const sortIdx=k=>SORT.findIndex(x=>x.k===k);
-const LABEL=k=>k==='gene_name'?'Gene':k==='em_structures'?'Structures':k==='score_total'?'Total':k==='copies_per_cell_U2OS'?'Copies/cell':k.startsWith('_g_')?GROUPS.find(g=>'_g_'+g.k===k).label:(CRIT[k]?CRIT[k][2]:k);
-const S0=()=>({q:'',fams:new Set(),structs:new Set(),nothpa:false,tm:false,minTotal:0,maxTotal:null,xfams:new Set(),xstructs:new Set(),crit:{},cmin:null,cmax:null});
+const LABEL=k=>k==='gene_name'?'Gene':k==='em_structures'?'Structures':k==='score_total'?'Total':k==='copies_per_cell_U2OS'?'Copies/cell':k==='protein_mass_kda'?'Protein mass':k==='complex_max_mda'?'Complex size':k.startsWith('_g_')?GROUPS.find(g=>'_g_'+g.k===k).label:(CRIT[k]?CRIT[k][2]:k);
+const S0=()=>({q:'',fams:new Set(),structs:new Set(),nothpa:false,tm:false,minTotal:0,maxTotal:null,xfams:new Set(),xstructs:new Set(),crit:{},cmin:null,cmax:null,mmin:null,mmax:null,cx:false,cxbig:false,cxst:false});
 let S=S0();
 GROUPS.forEach(g=>{if(g.crits.length)NUM.add('_g_'+g.k)});
 const $=id=>document.getElementById(id);
 const fmtCopies=r=>{const b=/^[<>]/.test(r.copies_raw||'')?r.copies_raw[0]:'';return b+fmtNum(r.copies_per_cell_U2OS)};
+const fmtMDa=r=>{const v=r.complex_max_mda;if(v==null)return '<span class="na">–</span>';const p=r.complex_max_min_estimate==='yes'?'≥':'';return v>=1?p+(Math.round(v*10)/10)+' MDa':p+Math.round(v*1000)+' kDa'};
 const fmtNum=v=>{if(v===''||v==null)return '';const n=+v;if(isNaN(n))return v;if(n>=1e5)return n.toExponential(1);if(n>=1000)return Math.round(n).toLocaleString('en');return (Math.round(n*10)/10).toString()};
 const mark=v=>v==null?`<span class="m nt" title="not tested in any screen">–</span>`:`<span class="m v${v||0}" title="${v} of 2">${v}</span>`;
 const strip=t=>`<b class="tnum">${t}</b>`;
@@ -576,6 +590,10 @@ function apply(){
     if(S.xfams.size&&r.fams.some(f=>S.xfams.has(f)))return false;
     if(S.xstructs.size&&r.structs.some(x=>S.xstructs.has(x)))return false;
     for(const k in S.crit)if(r[k]<S.crit[k])return false;
+    if(S.mmin!=null||S.mmax!=null){const m=r.protein_mass_kda;if(m==null)return false;if(S.mmin!=null&&m<S.mmin)return false;if(S.mmax!=null&&m>S.mmax)return false}
+    if(S.cx&&!r.complex_n)return false;
+    if(S.cxbig&&!(r.complex_max_mda>=1))return false;
+    if(S.cxst&&r.complex_stoich_known!=='yes')return false;
     if(S.cmin!=null||S.cmax!=null){const c=r.copies_per_cell_U2OS;if(c==null)return false;if(S.cmin!=null&&c<S.cmin)return false;if(S.cmax!=null&&c>S.cmax)return false}
     return true};
   const inT=r=>r.score_total>=S.minTotal&&(S.maxTotal==null||r.score_total<=S.maxTotal);
@@ -595,6 +613,10 @@ function activeFilters(){
   for(const k in S.crit)a.push({t:`${CRIT[k][2]} ${S.crit[k]===2?'= 2':'≥ 1'}`,off:()=>{delete S.crit[k]}});
   if(S.minTotal||S.maxTotal!=null)a.push({t:`Total <b>${S.minTotal}${S.maxTotal!=null?(S.maxTotal===S.minTotal?'':'–'+S.maxTotal):'–'+MAXT()}</b>`,off:()=>{S.minTotal=0;S.maxTotal=null}});
   if(S.cmin!=null||S.cmax!=null)a.push({t:`Copies/cell ${S.cmin!=null?'≥ '+fmtNum(S.cmin):''}${S.cmin!=null&&S.cmax!=null?' and ':''}${S.cmax!=null?'≤ '+fmtNum(S.cmax):''}`,off:()=>{S.cmin=null;S.cmax=null;$('cmin').value='';$('cmax').value=''}});
+  if(S.mmin!=null||S.mmax!=null)a.push({t:`Mass ${S.mmin!=null?'≥ '+fmtNum(S.mmin):''}${S.mmin!=null&&S.mmax!=null?' and ':''}${S.mmax!=null?'≤ '+fmtNum(S.mmax):''} kDa`,off:()=>{S.mmin=null;S.mmax=null;$('mmin').value='';$('mmax').value=''}});
+  if(S.cx)a.push({t:'In a complex',off:()=>{S.cx=false}});
+  if(S.cxbig)a.push({t:'Complex ≥ 1 MDa',off:()=>{S.cxbig=false}});
+  if(S.cxst)a.push({t:'Stoichiometry known',off:()=>{S.cxst=false}});
   if(S.nothpa)a.push({t:'Not in HPA, or no IF data',off:()=>{S.nothpa=false}});
   if(S.tm)a.push({t:'Transmembrane',off:()=>{S.tm=false}});
   return a}
@@ -609,12 +631,12 @@ function syncSidebar(){
   document.querySelectorAll('.fam.sub').forEach(d=>{d.classList.toggle('on',S.fams.has(d.dataset.p)||S.structs.has(d.dataset.s));d.classList.toggle('ex',S.xfams.has(d.dataset.p)||S.xstructs.has(d.dataset.s))});
   document.querySelectorAll('.crit').forEach(c=>{const v=S.crit[c.dataset.k]||0;c.querySelectorAll('b').forEach(b=>b.classList.toggle('on',+b.dataset.v===v))});
   syncTotal();
-  $('f-nothpa').checked=S.nothpa;$('f-tm').checked=S.tm;if($('q').value!==S.q)$('q').value=S.q}
-function resetAll(){S=S0();$('cmin').value='';$('cmax').value='';apply()}
+  $('f-nothpa').checked=S.nothpa;$('f-tm').checked=S.tm;$('f-cx').checked=S.cx;$('f-cxbig').checked=S.cxbig;$('f-cxst').checked=S.cxst;if($('q').value!==S.q)$('q').value=S.q}
+function resetAll(){S=S0();for(const id of ['cmin','cmax','mmin','mmax'])$(id).value='';apply()}
 function cmp(a,b,k,d){let x=a[k],y=b[k];if(NUM.has(k)){x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*d}return String(x).localeCompare(String(y))*d}
 function sortView(){VIEW.sort((a,b)=>{for(const {k,d} of SORT){const c=cmp(a,b,k,d);if(c)return c}return a.gene_name.localeCompare(b.gene_name)})}
 
-const SORTABLE=[['score_total','Total'],['copies_per_cell_U2OS','Copies/cell'],['gene_name','Gene'],...GROUPS.filter(g=>g.crits.length).map(g=>['_g_'+g.k,g.label+' (subtotal)']),...CRITS.map(c=>[c[0],c[2]])];
+const SORTABLE=[['score_total','Total'],['copies_per_cell_U2OS','Copies/cell'],['protein_mass_kda','Protein mass'],['complex_max_mda','Complex size'],['gene_name','Gene'],...GROUPS.filter(g=>g.crits.length).map(g=>['_g_'+g.k,g.label+' (subtotal)']),...CRITS.map(c=>[c[0],c[2]])];
 function renderSortBar(){
   const used=new Set(SORT.map(x=>x.k));
   const opts=SORTABLE.filter(([k])=>!used.has(k)).map(([k,l])=>`<option value="${k}">${l}</option>`).join('');
@@ -633,12 +655,12 @@ function render(){
   $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal&&(S.maxTotal==null||i<=S.maxTotal)?'hi':'out'}" data-s="${i}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?(n>=1000&&innerWidth<760?(n/1000).toFixed(1).replace(/\.0$/,'')+'k':n.toLocaleString('en')):''}</em><span>${i}</span></div>`).join('');
   $('chartTitle').textContent=`${VIEW.length.toLocaleString('en')} proteins in the current view`;
   $('count').innerHTML=(activeFilters().length?`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins match`:`<span class="mono">${DATA.length.toLocaleString('en')}</span> proteins`)+' · click a heading to sort, shift-click to add a level, a row to open';
-  const TIP=Object.fromEntries(CRITS.map(c=>[c[0],c[2]+'. '+c[3]]));TIP.score_total=FXON?'Sum of the seven columns, equal weight, including Functional (proposed). Out of 14.':'Sum of the six columns, equal weight, out of 12 (2 to 12 in practice, since two columns never give 0). Functional (proposed) is not included; switch it on in the sidebar.';TIP.copies_per_cell_U2OS='Copies per cell in U2-OS, Beck et al. 2011.';TIP.em_structures='Structures the protein is annotated on, from HPA and UniProt. Dashed means a broad class.';
-  const g1=`<tr class="grp"><th colspan="2"></th>${GROUPS.map(g=>`<th colspan="${Math.max(1,g.crits.length)}" class="g ${g.k} ${sortIdx('_g_'+g.k)>=0?('sorted '+(SORT[sortIdx('_g_'+g.k)].d<0?'desc':'asc')):''}" data-n="${sortIdx('_g_'+g.k)+1}" ${g.crits.length?`data-k="_g_${g.k}"`:''} title="${esc(g.ask+' '+g.data+(g.crits.length?' Click to sort by this subtotal.':''))}">${g.label}${g.proposed?'<small>'+(FXON?'proposed':'proposed, not in total')+'</small>':''}${sortIdx('_g_'+g.k)>=0&&SORT.length>1?`<span class="lvl">${sortIdx('_g_'+g.k)+1}</span>`:''}</th>`).join('')}<th colspan="2"></th></tr>`;
+  const TIP=Object.fromEntries(CRITS.map(c=>[c[0],c[2]+'. '+c[3]]));TIP.score_total=FXON?'Sum of the seven columns, equal weight, including Functional (proposed). Out of 14.':'Sum of the six columns, equal weight, out of 12 (2 to 12 in practice, since two columns never give 0). Functional (proposed) is not included; switch it on in the sidebar.';TIP.copies_per_cell_U2OS='Copies per cell in U2-OS, Beck et al. 2011.';TIP.protein_mass_kda='Protein mass in kDa, from UniProt (canonical sequence).';TIP.complex_max_mda='Size of the largest curated complex it belongs to (EBI Complex Portal), summed from subunit masses. ≥ means some subunit copy numbers are unknown, so it is a minimum. RNA is not counted.';TIP.em_structures='Structures the protein is annotated on, from HPA and UniProt. Dashed means a broad class.';
+  const g1=`<tr class="grp"><th colspan="2"></th>${GROUPS.map(g=>`<th colspan="${Math.max(1,g.crits.length)}" class="g ${g.k} ${sortIdx('_g_'+g.k)>=0?('sorted '+(SORT[sortIdx('_g_'+g.k)].d<0?'desc':'asc')):''}" data-n="${sortIdx('_g_'+g.k)+1}" ${g.crits.length?`data-k="_g_${g.k}"`:''} title="${esc(g.ask+' '+g.data+(g.crits.length?' Click to sort by this subtotal.':''))}">${g.label}${g.proposed?'<small>'+(FXON?'proposed':'proposed, not in total')+'</small>':''}${sortIdx('_g_'+g.k)>=0&&SORT.length>1?`<span class="lvl">${sortIdx('_g_'+g.k)+1}</span>`:''}</th>`).join('')}<th colspan="4"></th></tr>`;
   const g2=`<tr>${COLS.map(([k,l])=>k==='_img'?`<th class="c img" title="${esc(GROUPS[3].data)}">${l}</th>`:`<th data-k="${k}" title="${esc(TIP[k]||'')}" class="${CENTER.has(k)?'c hasf':(NUM.has(k)?'num':'')} ${sortIdx(k)>=0?('sorted '+(SORT[sortIdx(k)].d<0?'desc':'asc')):''}" data-n="${sortIdx(k)+1}">${CENTER.has(k)?`<button class="fbtn ${S.crit[k]?'on':''}" data-f="${k}" title="Filter this column" aria-label="Filter ${CRIT[k][2]}"><svg viewBox="0 0 10 10"><path d="M0 0h10L6 5v4L4 10V5z"/></svg></button>`:''}${l}${sortIdx(k)>=0&&SORT.length>1?`<span class="lvl">${sortIdx(k)+1}</span>`:''}</th>`).join('')}</tr>`;
   $('thead').innerHTML=g1+g2;
   $('tbody').innerHTML='';shown=0;$('scroll').scrollTop=0;more()}
-function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g" title="${esc(r.gene_name)}">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>`<td class="c ${g.k}">${mark(r[k])}</td>`):[`<td class="c img">–</td>`]).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
+function more(){const frag=[];const end=Math.min(VIEW.length,shown+150);for(let i=shown;i<end;i++){const r=VIEW[i];frag.push(`<tr data-i="${i}" class="${sel===r?'sel':''}"><td class="g" title="${esc(r.gene_name)}">${esc(r.gene_name)}</td><td class="st" title="${esc(r.structs.join(', '))}">${r.structs.slice(0,2).map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join('')}${r.structs.length>2?`<span class="pill more">+${r.structs.length-2}</span>`:''}</td>${GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>`<td class="c ${g.k}">${mark(r[k])}</td>`):[`<td class="c img">–</td>`]).join('')}<td class="num">${strip(r.score_total)}</td><td class="num">${fmtCopies(r)}</td><td class="num">${r.protein_mass_kda==null?'':fmtNum(r.protein_mass_kda)}</td><td class="num" title="${r.complex_n?esc(r.complexes.split(' | ')[0].split('~')[1])+(r.complex_n>1?' and '+(r.complex_n-1)+' more':''):'not in a curated complex'}">${fmtMDa(r)}</td></tr>`)}$('tbody').insertAdjacentHTML('beforeend',frag.join(''));shown=end}
 $('scroll').addEventListener('scroll',e=>{const s=e.target;if(s.scrollTop+s.clientHeight>s.scrollHeight-600&&shown<VIEW.length)more()});
 $('thead').addEventListener('click',e=>{const fb=e.target.closest('.fbtn');if(fb){e.stopPropagation();openPop(fb);return}const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;const i=sortIdx(k);const def=NUM.has(k)?-1:1;
   if(e.shiftKey){if(i>=0)SORT[i].d*=-1;else SORT.push({k,d:def})}else{if(i>=0&&SORT.length===1)SORT[0].d*=-1;else SORT=[{k,d:def}]}
@@ -700,6 +722,11 @@ function showDetail(r){
     <div class="links">${hpaUrl?`<a href="${hpaUrl}" target="_blank" rel="noopener">HPA</a>`:''}${r.uniprot?`<a href="https://www.uniprot.org/uniprotkb/${r.uniprot}/entry" target="_blank" rel="noopener">UniProt</a>`:''}${r.tag_lines.includes('OpenCell')?`<a href="https://opencell.sf.czbiohub.org/search?query=${r.gene_name}" target="_blank" rel="noopener">OpenCell</a>`:''}<a href="https://depmap.org/portal/gene/${r.gene_name}?tab=overview" target="_blank" rel="noopener">DepMap</a></div>
     ${hpaUrl?`<div class="card imgcard"><h5>HPA images <b class="na" id="imgline"></b></h5><div class="imgs" id="hpaimgs"><span class="imgmsg">Loading images from HPA…</span></div><p class="imgcap" id="imgcap"></p></div>`:''}
     <div class="card"><h5>Score <b>${r.score_total} / ${MAXT()}</b></h5>${GROUPS.map(g=>`<div class="grp"><div class="gh"><span>${g.label}${g.proposed?` <em class="na">(proposed${FXON?'':', not in total'})</em>`:''}</span>${g.crits.length?`<b>${g.crits.reduce((a,k)=>a+(r[k]||0),0)} / ${g.crits.length*2}</b>`:'<b class="na">not scored</b>'}</div>${g.crits.length?`<div class="sc">${g.crits.map(k=>CRIT[k]).map(c=>`<span class="nm">${c[2]}</span><span class="val">${mark(r[c[0]])}</span><div class="why">${why[c[0]]}</div>`).join('')}</div>`:`<div class="why na">${esc(g.data)}</div>`}</div>`).join('')}</div>
+    <div class="card"><h5>Size and complexes</h5>
+      <div class="row"><span>Protein</span><span class="mono">${r.protein_mass_kda!=null?fmtNum(r.protein_mass_kda)+' kDa':'no value'}${r.protein_length?' · '+esc(r.protein_length)+' aa':''}</span></div>
+      ${r.complex_n?`<div class="cxl">${r.complexes.split(' | ').slice(0,4).map(c=>{const [id,nm,n,mda,st]=c.split('~');const m=+mda;return `<div class="cx"><a href="https://www.ebi.ac.uk/complexportal/complex/${esc(id)}" target="_blank" rel="noopener">${esc(nm)}</a><span class="mono">${n} subunits · ${st==='1'?'':'≥'}${m>=1?(Math.round(m*10)/10)+' MDa':Math.round(m*1000)+' kDa'} · ${st==='1'?'stoichiometry known':'stoichiometry unknown'}</span></div>`}).join('')}${r.complex_n>4?`<div class="why">and ${r.complex_n-4} more (largest shown first)</div>`:''}</div>`:'<div class="why">Not in a curated complex in the Complex Portal.</div>'}
+      ${r.uniprot_subunit?`<div class="why"><em>UniProt:</em> ${esc(r.uniprot_subunit)}</div>`:''}
+    </div>
     <div class="card"><h5>Structures</h5><div>${r.structs.length?r.structs.map(s=>`<span class="pill ${PARTIAL.has(s)?'part':''}">${esc(s)}</span>`).join(''):'<span class="pill part">none mapped</span>'}</div></div>
     <div class="card"><h5>Other facts</h5>
       <div class="row"><span>Source</span><span>${esc(r.source)}</span></div>
@@ -755,7 +782,7 @@ $('fams').addEventListener('click',e=>{
 $('crits').innerHTML=GROUPS.filter(g=>g.crits.length).map(g=>`<div class="critg">${g.label}</div>`+g.crits.map(k=>CRIT[k]).map(c=>`<div class="crit${c[0]==='score_function'?' prop':''}" data-k="${c[0]}" title="${esc(c[3])}"><span>${c[2]}</span><span class="seg"><b data-v="0" class="on">any</b><b data-v="1">≥1</b><b data-v="2">2</b></span></div>`).join('')).join('');
 $('crits').addEventListener('click',e=>{const b=e.target.closest('b');if(!b)return;const k=b.closest('.crit').dataset.k;const v=+b.dataset.v;if(v)S.crit[k]=v;else delete S.crit[k];apply()});
 $('q').addEventListener('input',e=>{S.q=e.target.value;apply()});
-for(const [id,k] of [['f-nothpa','nothpa'],['f-tm','tm']])$(id).addEventListener('change',e=>{S[k]=e.target.checked;apply()});
+for(const [id,k] of [['f-nothpa','nothpa'],['f-tm','tm'],['f-cx','cx'],['f-cxbig','cxbig'],['f-cxst','cxst']])$(id).addEventListener('change',e=>{S[k]=e.target.checked;apply()});
 // ---- total score range: two-thumb slider under the chart, drag or click on the bars, or the sidebar selects
 function setRange(lo,hi){const m=MAXT();lo=Math.max(0,Math.min(m,lo));hi=Math.max(0,Math.min(m,hi));if(lo>hi)[lo,hi]=[hi,lo];S.minTotal=lo;S.maxTotal=hi>=m?null:hi;apply()}
 function syncTotal(){const m=MAXT(),lo=S.minTotal,hi=S.maxTotal??m;
@@ -781,7 +808,7 @@ function setFx(on){FXON=on;for(const r of DATA)r.score_total=on?(r.score_total_w
   $('f-fx').checked=on;apply();if(sel)showDetail(sel)}
 $('f-fx').addEventListener('change',e=>setFx(e.target.checked));
 const parseCopies=v=>{v=String(v).trim().replace(/[,\s]/g,'');if(!v)return null;const n=Number(v);return isFinite(n)?n:null};
-for(const [id,k] of [['cmin','cmin'],['cmax','cmax']])$(id).addEventListener('change',e=>{S[k]=parseCopies(e.target.value);apply()});
+for(const [id,k] of [['cmin','cmin'],['cmax','cmax'],['mmin','mmin'],['mmax','mmax']])$(id).addEventListener('change',e=>{S[k]=parseCopies(e.target.value);apply()});
 $('reset').addEventListener('click',resetAll);
 document.querySelectorAll('[data-modal]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.modal).classList.add('open')));
 document.querySelectorAll('.modal').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('close'))m.classList.remove('open')})});

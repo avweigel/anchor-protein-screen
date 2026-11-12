@@ -36,4 +36,11 @@ A seventh column, **Functional (proposed)**, was suggested at the Space WG on 11
 
 Screens: JUMP Cell Painting (CRISPR, U2-OS), PERISCOPE (CRISPR, HeLa and A549), Funk 2022 (CRISPR, HeLa), MitoCheck (RNAi, HeLa), Perturb-seq (CRISPRi, K562 and RPE1), DepMap 26Q3 (U2-OS fitness), BioGRID ORCS 2.0.18 (U2-OS and HeLa CRISPR screens). Per-screen results are in the `fx_*` columns.
 
+## Size and complexes (shown and filterable, not scored)
+
+- `protein_length`, `protein_mass_kda`: UniProt canonical sequence.
+- `complexes`, `complex_n`, `complex_max_mda`: curated human complexes from the EBI Complex Portal (`data/complexportal_9606.tsv`). Complex size is summed from UniProt subunit masses times stoichiometry; where stoichiometry is unknown each subunit counts once and the size is a minimum (`complex_max_min_estimate`). RNA is not counted, so ribosomes come out small.
+- `complex_stoich_known`: at least one of its complexes has every subunit's copy number.
+- `uniprot_subunit`: first sentence of UniProt's subunit note (`data/uniprot_subunit.tsv`).
+
 Details and known limits are in the page under "How the score is made".
