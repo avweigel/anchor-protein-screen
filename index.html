@@ -102,6 +102,16 @@
   .fam .sw{width:12px;height:12px;border-radius:3px;border:1.5px solid var(--line);background:transparent;margin-right:9px;flex:none;transition:all .12s}
   .fam.on .sw{background:var(--accent);border-color:var(--accent)}
   .fam span{display:flex;align-items:center;flex:1;min-width:0}
+  .fam .xb{width:22px;height:22px;margin:0 4px 0 2px;padding:0;border:none;background:none;border-radius:5px;color:var(--ink-3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;opacity:0;transition:opacity .1s}
+  .fam .xb svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+  .fam:hover .xb,.fam .xb:focus-visible,.fam.ex .xb{opacity:1}
+  .fam .xb:hover{background:var(--panel);color:#c2410c}
+  .fam.ex{color:var(--ink-3)}
+  .fam.ex em{text-decoration:line-through}
+  .fam.ex .xb{color:#c2410c}
+  .fam.ex .sw{border-color:#c2410c;background:repeating-linear-gradient(135deg,transparent 0 3px,rgba(194,65,12,.45) 3px 4.5px)}
+  .chip.ex b{text-decoration:line-through}
+  @media (hover:none){.fam .xb{opacity:.7}}
   .chk{display:flex;gap:9px;align-items:flex-start;padding:4px 0;cursor:pointer;user-select:none;color:var(--ink);line-height:1.35}
   .chk input{accent-color:var(--accent);width:14px;height:14px;margin-top:2px;flex:none}
   .crit{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 8px;padding:3px 0;color:var(--ink)}
@@ -413,7 +423,7 @@
     <div class="ftop"><h3>Filters</h3><button class="clear" id="reset" hidden>Clear all</button><button class="mclose" id="mclose" aria-label="Close filters">×</button></div>
     <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" id="q" placeholder="Gene name or UniProt ID"></div>
     <h3>Compartment family</h3>
-      <p class="fhint">Open a family with the arrow to pick single structures.</p>
+      <p class="fhint">Click to show only that compartment; ⊘ to leave it out. The arrow opens single structures.</p>
     <div id="fams"></div>
     <h3>Score at least</h3>
     <p class="fhint">Per dataset column, under its criterion.</p>
@@ -544,7 +554,7 @@ let DATA=[],BASE=[],VIEW=[],HISTV=[],sel=null,shown=0;
 let SORT=[{k:'score_total',d:-1}];
 const sortIdx=k=>SORT.findIndex(x=>x.k===k);
 const LABEL=k=>k==='gene_name'?'Gene':k==='em_structures'?'Structures':k==='score_total'?'Total':k==='copies_per_cell_U2OS'?'Copies/cell':k.startsWith('_g_')?GROUPS.find(g=>'_g_'+g.k===k).label:(CRIT[k]?CRIT[k][2]:k);
-const S0=()=>({q:'',fams:new Set(),structs:new Set(),nothpa:false,tm:false,minTotal:0,maxTotal:null,crit:{},cmin:null,cmax:null});
+const S0=()=>({q:'',fams:new Set(),structs:new Set(),nothpa:false,tm:false,minTotal:0,maxTotal:null,xfams:new Set(),xstructs:new Set(),crit:{},cmin:null,cmax:null});
 let S=S0();
 GROUPS.forEach(g=>{if(g.crits.length)NUM.add('_g_'+g.k)});
 const $=id=>document.getElementById(id);
@@ -563,6 +573,8 @@ function apply(){
     if(q&&!r._q.includes(q))return false;
     if(S.nothpa&&r.source==='UniProt+HPA')return false;
     if(S.tm&&r.transmembrane!=='yes')return false;
+    if(S.xfams.size&&r.fams.some(f=>S.xfams.has(f)))return false;
+    if(S.xstructs.size&&r.structs.some(x=>S.xstructs.has(x)))return false;
     for(const k in S.crit)if(r[k]<S.crit[k])return false;
     if(S.cmin!=null||S.cmax!=null){const c=r.copies_per_cell_U2OS;if(c==null)return false;if(S.cmin!=null&&c<S.cmin)return false;if(S.cmax!=null&&c>S.cmax)return false}
     return true};
@@ -578,6 +590,8 @@ function activeFilters(){
   if(S.q.trim())a.push({t:`name <b>${esc(S.q.trim())}</b>`,off:()=>{S.q=''}});
   for(const f of S.fams)a.push({t:`<b>${esc(FAMLBL[f]||f)}</b>`,off:()=>S.fams.delete(f)});
   for(const x of S.structs)a.push({t:`<b>${esc(x)}</b>`,off:()=>S.structs.delete(x)});
+  for(const f of S.xfams)a.push({t:`not <b>${esc(FAMLBL[f]||f)}</b>`,ex:1,off:()=>S.xfams.delete(f)});
+  for(const x of S.xstructs)a.push({t:`not <b>${esc(x)}</b>`,ex:1,off:()=>S.xstructs.delete(x)});
   for(const k in S.crit)a.push({t:`${CRIT[k][2]} ${S.crit[k]===2?'= 2':'≥ 1'}`,off:()=>{delete S.crit[k]}});
   if(S.minTotal||S.maxTotal!=null)a.push({t:`Total <b>${S.minTotal}${S.maxTotal!=null?(S.maxTotal===S.minTotal?'':'–'+S.maxTotal):'–'+MAXT()}</b>`,off:()=>{S.minTotal=0;S.maxTotal=null}});
   if(S.cmin!=null||S.cmax!=null)a.push({t:`Copies/cell ${S.cmin!=null?'≥ '+fmtNum(S.cmin):''}${S.cmin!=null&&S.cmax!=null?' and ':''}${S.cmax!=null?'≤ '+fmtNum(S.cmax):''}`,off:()=>{S.cmin=null;S.cmax=null;$('cmin').value='';$('cmax').value=''}});
@@ -587,12 +601,12 @@ function activeFilters(){
 function renderChips(){
   const a=activeFilters();const el=$('chips');el.hidden=!a.length;$('reset').hidden=!a.length;
   if(!a.length){el.innerHTML='';return}
-  el.innerHTML=`<span class="lbl">Showing</span>`+a.map((f,i)=>`<span class="chip">${f.t}<button data-i="${i}" title="Remove this filter" aria-label="Remove filter">×</button></span>`).join('')+`<button class="clear" id="clear2">Clear all</button>`;
+  el.innerHTML=`<span class="lbl">Showing</span>`+a.map((f,i)=>`<span class="chip${f.ex?' ex':''}">${f.t}<button data-i="${i}" title="Remove this filter" aria-label="Remove filter">×</button></span>`).join('')+`<button class="clear" id="clear2">Clear all</button>`;
   el.querySelectorAll('.chip button').forEach(b=>b.addEventListener('click',()=>{a[+b.dataset.i].off();apply()}));
   $('clear2').addEventListener('click',resetAll)}
 function syncSidebar(){
-  document.querySelectorAll('.fam:not(.sub)').forEach(d=>{const f=d.dataset.f;d.classList.toggle('on',S.fams.has(f));d.classList.toggle('part',!S.fams.has(f)&&(SUBS[f]||[]).some(x=>S.structs.has(x)))});
-  document.querySelectorAll('.fam.sub').forEach(d=>d.classList.toggle('on',S.fams.has(d.dataset.p)||S.structs.has(d.dataset.s)));
+  document.querySelectorAll('.fam:not(.sub)').forEach(d=>{const f=d.dataset.f;d.classList.toggle('ex',S.xfams.has(f));d.classList.toggle('on',S.fams.has(f));d.classList.toggle('part',!S.fams.has(f)&&(SUBS[f]||[]).some(x=>S.structs.has(x)))});
+  document.querySelectorAll('.fam.sub').forEach(d=>{d.classList.toggle('on',S.fams.has(d.dataset.p)||S.structs.has(d.dataset.s));d.classList.toggle('ex',S.xfams.has(d.dataset.p)||S.xstructs.has(d.dataset.s))});
   document.querySelectorAll('.crit').forEach(c=>{const v=S.crit[c.dataset.k]||0;c.querySelectorAll('b').forEach(b=>b.classList.toggle('on',+b.dataset.v===v))});
   syncTotal();
   $('f-nothpa').checked=S.nothpa;$('f-tm').checked=S.tm;if($('q').value!==S.q)$('q').value=S.q}
@@ -715,18 +729,28 @@ $('map-uni').innerHTML='<tr><th>UniProt keyword</th><th>Gives</th><th>Mapped to<
 const SUBS={"ER": ["ER", "ER membrane", "ER membrane or lumen", "ER lumen"], "Golgi": ["Golgi", "Golgi stack", "Golgi membrane", "Golgi (TGN)"], "centromere/kinetochore": ["centromere", "kinetochore"], "centrosome": ["centrosome", "centriole pair", "primary cilium", "basal body", "centriole", "basal body (centriole)", "pericentriolar granules"], "chromosome": ["chromosome (broad)", "condensed chromosome"], "cytoskeleton": ["cytoskeleton (broad)", "cell projection", "microtubule", "spindle", "midbody", "actin bundles or stress fibers", "IF bundles", "actin bundle", "spindle microtubules", "microtubule plus end", "midbody ring", "cleavage furrow"], "endolysosomal": ["vesicle (unspecified)", "endosome", "lysosome", "lysosome membrane", "autophagosome", "lysosome lumen"], "junctions/adhesions": ["cell junction", "tight junction", "focal adhesion", "focal adhesion plaque", "adherens junction", "desmosome", "gap junction"], "mitochondria": ["mitochondrion", "mitochondrial inner membrane", "mitochondrial matrix", "mitochondrial outer membrane", "mitochondrial membrane"], "nuclear bodies": ["interchromatin granule cluster", "nuclear body", "nuclear speckle", "PML body", "Cajal body"], "nuclear envelope": ["nuclear envelope", "nuclear pore", "nuclear lamina"], "nucleolus": ["nucleolus", "nucleolus (fibrillar center)", "nucleolus (rim)"], "peroxisome": ["peroxisome", "peroxisome membrane"]};
 const FAM_OPEN=new Set();
 for(const k in SUBS)SUBS[k].sort((a,b)=>a.localeCompare(b,'en',{sensitivity:'base'}));
-$('fams').innerHTML=[...FAMS].sort((a,b)=>a==='no location'?1:b==='no location'?-1:FAMLBL[a].localeCompare(FAMLBL[b],'en',{sensitivity:'base'})).map(f=>{const sub=SUBS[f]||[];const chev='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"/></svg>';return `<div class="famwrap"><div class="fam" data-f="${f}">${sub.length>1?`<button class="caret" data-c="${f}" title="Show the structures in ${FAMLBL[f]}" aria-label="Show structures" aria-expanded="false">${chev}</button>`:'<span class="caret none"></span>'}<span class="lab" title="${FAMLBL[f]}"><i class="sw"></i><em>${FAMLBL[f]}</em></span><small></small></div>${sub.length>1?`<div class="subs" data-for="${f}" hidden>${sub.map(x=>`<div class="fam sub" data-s="${esc(x)}" data-p="${f}"><span class="lab" title="${esc(x)}"><i class="sw"></i><em>${esc(x)}</em></span><small></small></div>`).join('')}</div>`:''}</div>`}).join('');
+$('fams').innerHTML=[...FAMS].sort((a,b)=>a==='no location'?1:b==='no location'?-1:FAMLBL[a].localeCompare(FAMLBL[b],'en',{sensitivity:'base'})).map(f=>{const sub=SUBS[f]||[];const chev='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4"/></svg>';return `<div class="famwrap"><div class="fam" data-f="${f}">${sub.length>1?`<button class="caret" data-c="${f}" title="Show the structures in ${FAMLBL[f]}" aria-label="Show structures" aria-expanded="false">${chev}</button>`:'<span class="caret none"></span>'}<span class="lab" title="${FAMLBL[f]}"><i class="sw"></i><em>${FAMLBL[f]}</em></span><button class="xb" data-xf="${f}" title="Leave out proteins in ${FAMLBL[f]}" aria-label="Exclude ${FAMLBL[f]}"><svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.5"/><path d="M2.8 9.2 9.2 2.8"/></svg></button><small></small></div>${sub.length>1?`<div class="subs" data-for="${f}" hidden>${sub.map(x=>`<div class="fam sub" data-s="${esc(x)}" data-p="${f}"><span class="lab" title="${esc(x)}"><i class="sw"></i><em>${esc(x)}</em></span><button class="xb" data-xs="${esc(x)}" data-p="${f}" title="Leave out proteins in ${esc(x)}" aria-label="Exclude ${esc(x)}"><svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.5"/><path d="M2.8 9.2 9.2 2.8"/></svg></button><small></small></div>`).join('')}</div>`:''}</div>`}).join('');
 $('fams').addEventListener('click',e=>{
+  const xb=e.target.closest('.xb');
+  if(xb){e.stopPropagation();
+    if(xb.dataset.xf){const f=xb.dataset.xf;if(S.xfams.has(f))S.xfams.delete(f);else{S.xfams.add(f);S.fams.delete(f);(SUBS[f]||[]).forEach(y=>{S.structs.delete(y);S.xstructs.delete(y)})}}
+    else{const x=xb.dataset.xs,f=xb.dataset.p;
+      if(S.xfams.has(f)){S.xfams.delete(f);(SUBS[f]||[]).forEach(y=>{if(y!==x)S.xstructs.add(y)})}   // un-exclude one part of an excluded family
+      else if(S.xstructs.has(x))S.xstructs.delete(x);else{S.xstructs.add(x);S.structs.delete(x);if(S.fams.has(f)){S.fams.delete(f);(SUBS[f]||[]).forEach(y=>{if(y!==x)S.structs.add(y)})}}}
+    apply();return}
   const c=e.target.closest('.caret');
   if(c&&c.dataset.c){const f=c.dataset.c;const box=document.querySelector(`.subs[data-for="${f}"]`);const open=box.hidden;box.hidden=!open;c.classList.toggle('open',open);c.setAttribute('aria-expanded',open);return}
   const sd=e.target.closest('.fam.sub');
   if(sd){const x=sd.dataset.s,f=sd.dataset.p,all=SUBS[f];
+    if(S.xfams.has(f)){S.xfams.delete(f);all.forEach(y=>{if(y!==x)S.xstructs.add(y)});apply();return}   // clicking an excluded row only lifts the exclusion
+    if(S.xstructs.has(x)){S.xstructs.delete(x);apply();return}
     if(S.fams.has(f)){S.fams.delete(f);all.forEach(y=>{if(y!==x)S.structs.add(y)})}
     else{if(S.structs.has(x))S.structs.delete(x);else S.structs.add(x);
       if(all.every(y=>S.structs.has(y))){all.forEach(y=>S.structs.delete(y));S.fams.add(f)}}
     apply();return}
   const d=e.target.closest('.fam');if(!d)return;const f=d.dataset.f;
-  (SUBS[f]||[]).forEach(y=>S.structs.delete(y));
+  if(S.xfams.has(f)){S.xfams.delete(f);apply();return}
+  (SUBS[f]||[]).forEach(y=>{S.structs.delete(y);S.xstructs.delete(y)});
   if(S.fams.has(f))S.fams.delete(f);else S.fams.add(f);apply()});
 $('crits').innerHTML=GROUPS.filter(g=>g.crits.length).map(g=>`<div class="critg">${g.label}</div>`+g.crits.map(k=>CRIT[k]).map(c=>`<div class="crit${c[0]==='score_function'?' prop':''}" data-k="${c[0]}" title="${esc(c[3])}"><span>${c[2]}</span><span class="seg"><b data-v="0" class="on">any</b><b data-v="1">≥1</b><b data-v="2">2</b></span></div>`).join('')).join('');
 $('crits').addEventListener('click',e=>{const b=e.target.closest('b');if(!b)return;const k=b.closest('.crit').dataset.k;const v=+b.dataset.v;if(v)S.crit[k]=v;else delete S.crit[k];apply()});
