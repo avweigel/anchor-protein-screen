@@ -4,8 +4,10 @@ A paper counts when the protein is its subject (gene symbol or HGNC full name in
 and the paper uses imaging (method terms anywhere in the text). Two searches per protein:
   any = any imaging method, light or electron microscopy  -> count + 5 most-cited papers
   em  = electron, correlative or cryo methods only         -> count
-Short or word-like symbols (3 letters or fewer, or 4 letters with no digit) are ambiguous in text,
-so for those only the full name is used.
+Short or word-like symbols (3 letters or fewer, or 4 letters with no digit) are ambiguous in text. For those,
+the paper must name the protein by its common name (the first word of the HGNC name when it looks like a protein
+name, ending in -in or -ase: fibrillarin, zyxin, catalase), or name the symbol in the title or abstract and say
+"<symbol> protein" or "<symbol> gene" somewhere.
 Writes data/lit/europepmc_imaging.jsonl (one line per symbol); resumable. Run: python3 fetch_literature.py
 """
 import csv, json, os, re, sys, time, threading, urllib.parse, urllib.request
@@ -16,6 +18,10 @@ EM = '("electron microscopy" OR "cryo-electron tomography" OR "cryo-ET" OR "corr
 API = 'https://www.ebi.ac.uk/europepmc/webservices/rest/search'
 
 def ambiguous(s): return len(s) <= 3 or (len(s) == 4 and s.isalpha())
+GENERIC = {'protein','proteins','solute','zinc','family','small','nuclear','heat','ribosomal','mitochondrial','transmembrane','coiled','ankyrin','leucine','tripartite','general','glutathione','member','domain','containing','subunit','factor','receptor','putative','uncharacterized','cytochrome','dna','rna','alpha','beta','gamma','acyl','cell','growth','tumor','golgi','integral','signal','regulator','associated','component','complex','fibroblast','interleukin','chemokine','histone','killer','olfactory','taste','major','minor','high','low','long','short','upstream','downstream','phosphatidylinositol','calcium','potassium','sodium','chloride','voltage','guanine','adenosine','cyclin','dependent','kinase','phosphatase','ubiquitin','ligase'}
+def short_name(full):
+    w = re.split(r'[\s,/()]+', full.strip())[0] if full else ''
+    return w if (len(w) >= 4 and w.isalpha() and w.lower() not in GENERIC and w.lower().endswith(('in', 'ase'))) else ''
 
 def search(q, size):
     url = API + '?' + urllib.parse.urlencode({'query': q, 'format': 'json', 'pageSize': size, 'resultType': 'lite', 'sort': 'CITED desc'})
@@ -35,8 +41,12 @@ def main(symbols, names):
     lock = threading.Lock(); fh = open(OUT, 'a'); n = [0]
     def one(s):
         amb = ambiguous(s); name = names.get(s, '')
-        q = lambda f: f'{f}:"{s}"' if not name else (f'{f}:"{name}"' if amb else f'{f}:"{s}" OR {f}:"{name}"')
-        term = f'({q("TITLE")} OR {q("ABSTRACT")})'
+        ta = lambda x: f'(TITLE:"{x}" OR ABSTRACT:"{x}")'
+        if not amb: term = f'({ta(s)} OR {ta(name)})' if name else ta(s)
+        else:
+            sn = short_name(name)
+            term = f'({ta(sn)} OR ({ta(s)} AND "{sn}"))' if sn else f'({ta(s)} AND ("{s} protein" OR "{s} gene"))'
+            name = sn or f'"{s} protein" or "{s} gene"'
         a = search(f'{term} AND {IMG}', 5); e = search(f'{term} AND {EM}', 1)
         top = [{'pmid': x.get('pmid', ''), 'pmcid': x.get('pmcid', ''), 'doi': x.get('doi', ''), 'title': x.get('title', '')[:200],
                 'year': x.get('pubYear', ''), 'journal': x.get('journalTitle', ''), 'cited': x.get('citedByCount', 0)}
@@ -70,11 +80,19 @@ def build():
     with open('data/lit/imaging_counts.tsv', 'w', newline='') as fh:
         w = csv.writer(fh, delimiter='\t'); w.writerow(['gene', 'imaging_papers', 'em_papers', 'ambiguous_symbol', 'name_used'])
         for r in rows: w.writerow([r['gene'], r['any'], r['em'], 'yes' if r['ambiguous'] else '', r['name_used']])
+    names = {}
+    if os.path.exists('data/screens/raw/hgnc.tsv'):
+        for h in csv.DictReader(open('data/screens/raw/hgnc.tsv'), delimiter='\t'): names[h['symbol']] = h['name']
+    ta = lambda x: f'(TITLE:"{x}" OR ABSTRACT:"{x}")'
+    def term(s):
+        if not ambiguous(s): return f'({ta(s)} OR {ta(names[s])})' if names.get(s) else ta(s)
+        sn = short_name(names.get(s, ''))
+        return f'({ta(sn)} OR ({ta(s)} AND "{sn}"))' if sn else f'({ta(s)} AND ("{s} protein" OR "{s} gene"))'
     shards = collections.defaultdict(dict)
     for r in rows:
         if not r['top']: continue
         k = r['gene'][0].upper() if r['gene'][0].isalpha() else '0'
-        shards[k][r['gene']] = {'n': r['any'], 'em': r['em'], 'name': r['name_used'],
+        shards[k][r['gene']] = {'n': r['any'], 'em': r['em'], 'name': r['name_used'], 'q': term(r['gene']) + ' AND ' + IMG,
                                 'p': [[t['pmid'], t['pmcid'], t['year'], t['title'][:160], t['journal'][:60], t['cited']] for t in r['top']]}
     os.makedirs('lit', exist_ok=True)
     for k, d in shards.items(): json.dump(d, open(f'lit/{k}.json', 'w'), separators=(',', ':'))
