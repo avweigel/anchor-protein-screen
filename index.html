@@ -50,7 +50,22 @@
   body{background:var(--bg);font-family:var(--font-ui);color:var(--ink);font-size:13px;line-height:1.4;-webkit-font-smoothing:antialiased}
   button{font:inherit;color:inherit}
   .mono{font-family:var(--font-mono)}
-  .app{height:100vh;display:grid;grid-template-rows:60px 1fr;grid-template-columns:252px 1fr 352px}
+  .app{height:100vh;display:grid;grid-template-rows:60px 1fr;grid-template-columns:var(--lwe,252px) 1fr var(--rwe,352px);position:relative}
+  /* resizable, collapsible side panels (desktop) */
+  .rz{position:absolute;top:60px;bottom:0;width:12px;z-index:40;cursor:col-resize;touch-action:none;outline:none}
+  .rz::before{content:"";position:absolute;top:0;bottom:0;left:5px;width:2px;background:transparent;transition:background .15s}
+  .rz:hover::before,.rz.drag::before,.rz:focus-visible::before{background:var(--accent)}
+  #rzL{left:calc(var(--lwe,252px) - 6px)}
+  #rzR{right:calc(var(--rwe,352px) - 6px)}
+  .rz button{position:absolute;top:calc(50% - 22px);left:-5px;width:22px;height:44px;padding:0;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink-2);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+  .rz button svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .rz:hover button,.rz:focus-within button,.rz.col button{opacity:1}
+  #rzL.col button{left:6px}
+  #rzR.col button{left:-16px}
+  body.resizing{cursor:col-resize;user-select:none}
+  body.resizing *{cursor:col-resize!important}
+  @media (min-width:761px){.app.lc aside{visibility:hidden;padding:0;border:0;overflow:hidden}}
+  @media (min-width:1321px){.app.rc .detail{visibility:hidden;padding:0;border:0;overflow:hidden}}
 
   /* Header band */
   header{grid-column:1/4;background:var(--band);color:var(--band-ink);display:flex;align-items:center;padding:0 22px;gap:16px}
@@ -307,14 +322,15 @@
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
   @media (max-width:1500px){td.st{max-width:90px}td.g{max-width:none;white-space:nowrap}td,th{padding-left:6px;padding-right:6px}th.c,td.c{padding-left:2px;padding-right:2px}.tot .strip{display:none}thead tr.grp th{font-size:9.5px;letter-spacing:0;padding-left:2px;padding-right:2px}th.c{font-size:9.5px;letter-spacing:.02em}th.img{font-size:9.5px}tr:not(.grp) th.c[data-k]{padding-right:10px}th.c.hasf{padding-left:11px}tr:not(.grp) th[data-k]::after,tr:not(.grp) th[data-k]::before{right:2px}.fbtn{left:0}tr:not(.grp) th.num[data-k]{padding-right:12px;font-size:9.5px;letter-spacing:.03em}td.st{max-width:78px;font-size:12px;color:var(--ink-2)}td.st .pill{display:inline;border:none;background:none;padding:0;margin:0;font-size:12px;color:inherit}td.st .pill.part{color:var(--ink-3)}td.st .pill+.pill::before{content:", "}td.st .pill.more{color:var(--ink-3)}td.st .pill.more::before{content:" "}}
-  @media (max-width:1300px){.app{grid-template-columns:230px 1fr 310px}header .sub{display:none}}
-  @media (max-width:1320px){.app{grid-template-columns:250px 1fr}.detail{z-index:60;position:fixed;top:60px;right:0;bottom:0;width:min(372px,90vw);box-shadow:-6px 0 24px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
+  @media (max-width:1300px){header .sub{display:none}}
+  @media (max-width:1320px){.app{grid-template-columns:var(--lwe,250px) 1fr}#rzR{display:none}.detail{z-index:60;position:fixed;top:60px;right:0;bottom:0;width:min(var(--rw,372px),90vw);box-shadow:-6px 0 24px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .2s}.detail.open{transform:none}.detail .closeD{display:block}}
   .detail .closeD{display:block;float:right;font-size:20px;border:none;background:none;color:var(--ink-3);cursor:pointer;line-height:1}
 .imgs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.imgs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;display:block;background:#000}.imgmsg{grid-column:1/-1;font-size:12px;opacity:.75}.imgcap{font-size:11px;opacity:.7;margin:6px 0 0;line-height:1.4}
 .caret{width:18px;height:18px;margin:0 4px 0 -4px;padding:0;border:none;background:none;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;color:var(--ink-3)}.caret svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}.caret:hover{color:var(--ink);background:var(--panel-2)}.caret.open svg{transform:rotate(90deg)}.caret.none{cursor:default;pointer-events:none}.fam .caret{flex:none}.fam .lab{display:flex;align-items:center;flex:1;min-width:0}.fam .lab em{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fam small{flex:none;margin-left:8px}.subs{margin:2px 0 6px 13px;padding-left:12px;border-left:1px solid var(--line)}.fam.sub{font-size:12px;padding:3px 6px;color:var(--ink-2)}.fam.sub .sw{width:10px;height:10px;margin-right:8px}.fam.sub small{font-size:10.5px}.fam.sub.on{color:var(--accent-ink)}#q{width:100%;max-width:100%;display:block}.foot{gap:16px;flex-wrap:wrap;align-items:center}.fam.part .sw{background:linear-gradient(135deg,var(--accent) 50%,transparent 50%);border-color:var(--accent)}
 
 .mfilt,.mclose,.mshow{display:none}
 @media (max-width:760px){
+  .rz{display:none}
   .app{display:block;height:auto;min-height:100vh}
   header{position:sticky;top:0;z-index:70;flex-wrap:wrap;height:auto;padding:10px 14px 8px;gap:8px 10px}
   header .brand{flex:1;min-width:0}
@@ -392,7 +408,7 @@
     <h3>Total score at least</h3>
     <div class="range"><input type="range" id="minTotal" min="0" max="12" value="0"></div>
     <div class="mini"><span>0</span><b id="minTotalLbl">any</b><span id="maxTotalLbl">12</span></div>
-    <label class="chk"><input type="checkbox" id="f-fx"> Count Functional (proposed) in the total, out of 14</label>
+    <label class="chk"><input type="checkbox" id="f-fx" checked> Count Functional (proposed) in the total, out of 14</label>
     <h3>Other</h3>
     <label class="chk"><input type="checkbox" id="f-nothpa"> Not in HPA, or no HPA IF data</label>
     <label class="chk"><input type="checkbox" id="f-tm"> Transmembrane</label>
@@ -418,6 +434,10 @@
   <section class="detail" id="detail">
     <div class="empty intro" id="intro"></div>
   </section>
+  <div class="rz" id="rzL" role="separator" aria-orientation="vertical" aria-label="Resize filters panel" tabindex="0" title="Drag to resize the filters. Double-click to reset. Shortcut: [">
+    <button type="button" aria-label="Hide filters"><svg viewBox="0 0 12 12"><path d="M7.5 2.5 4 6l3.5 3.5"/></svg></button></div>
+  <div class="rz" id="rzR" role="separator" aria-orientation="vertical" aria-label="Resize details panel" tabindex="0" title="Drag to resize the details. Double-click to reset. Shortcut: ]">
+    <button type="button" aria-label="Hide details"><svg viewBox="0 0 12 12"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></button></div>
 </div>
 
 <div class="modal" id="m-criteria"><div class="box"><button class="close" aria-label="Close">×</button>
@@ -456,7 +476,7 @@
   <p>The list is every reviewed human protein in UniProt (20,429) plus every gene with HPA subcellular data not already in that set. Each protein appears once per UniProt entry, so a few genes with two entries (TMPO, for example) appear twice.</p>
   <p>Locations come from two places: HPA's immunofluorescence annotation and UniProt's subcellular location text. Each HPA location term and each UniProt keyword is mapped to whether it is a structure that can be found in an EM volume (yes, partial, no), and to one of 15 compartment families. The family is what the sidebar filters on.</p>
   <p>The total is the plain sum of the six scores, equal weight. Two columns (tagged line, copy number) use 1 for "no" rather than 0, so totals run from 2 to 12. Weighting is deliberately left out for now; it is a working group question.</p>
-  <p>Functional (proposed 11 Nov) is a seventh column. It is off the total by default, so the totals match what the working group saw; the sidebar switch adds it, and the total is then out of 14. Screen results are built by <code>fetch_screens.py</code> into <code>data/screens/</code>.</p>
+  <p>Functional (proposed 11 Nov) is a seventh column. It counts in the total by default, out of 14. Untick it in the sidebar to get the six-column total out of 12 that the working group saw on 11 Nov. Screen results are built by <code>fetch_screens.py</code> into <code>data/screens/</code>.</p>
   <p>Script and inputs are in the repository next to this page: <code>score.py</code>, <code>hpa_em_lookup.csv</code>, <code>data/</code>. The table is <code>anchor_scores.tsv</code>.</p>
   <h3>Known limits</h3>
   <p>The antibody score only reflects HPA IF reliability. Agreement is judged by family, so "nuclear speckles" and "nuclear lamina" count as agreeing (both nuclear). Copy numbers are from one 2011 mass spectrometry study. OpenCell and Allen lines are in other cell types than U2-OS.</p>
@@ -501,7 +521,7 @@ const UNI_BROAD=[["Chromosome", "chromosome (broad)"], ["cytoskeleton", "cytoske
 
 const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMap(g=>g.crits.length?g.crits.map(k=>[k,CRIT[k][1]]):[['_img','later']]),['score_total','Total'],['copies_per_cell_U2OS','Copies/cell']];
 const NUM=new Set(['score_total','score_total_with_function','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
-let FXON=false;const MAXT=()=>FXON?14:12;
+let FXON=true;const MAXT=()=>FXON?14:12;
 const CENTER=new Set(CRITS.map(c=>c[0]));
 let DATA=[],BASE=[],VIEW=[],sel=null,shown=0;
 let SORT=[{k:'score_total',d:-1}];
@@ -658,7 +678,7 @@ function showDetail(r){
   if(hpaUrl)loadHpaImages(r,hpaUrl);}
 
 $('key').innerHTML=`<span class="hint">Headings are the proposed criteria; each column under them is one dataset.</span><span>${mark(2)} yes</span><span>${mark(1)} in part</span><span>${mark(0)} no, or unknown</span><span class="hint">Hover a heading for what it asks; the funnel filters that column.</span>`;
-$('intro').innerHTML=`<h2>What this is</h2><p>Anchor proteins are a small set, 5 to 10, tagged in U2-OS so the same proteins can be found across datasets: in our light microscopy and EM, and in data that already exists, such as HPA, OpenCell and copy-number studies. They are the link between those datasets.</p><p>The table is the UniProt reviewed human proteome (20,429 entries) plus genes with HPA subcellular data that are not in it, 20,661 rows in all, scored on what public databases already say.</p><p>The five proposed criteria, a sixth proposed at the Space WG on 11 Nov, and what the data can and cannot answer:</p><dl>${GROUPS.map(g=>`<dt>${g.label}${g.proposed?' (proposed)':''}</dt><dd><span class="ask">${esc(g.ask)}</span> ${esc(g.data)}</dd>`).join('')}</dl><p>Each dataset column is scored 0, 1 or 2. The total is the plain sum (2 to 12 in practice, since two columns never give 0), so Identity, with three columns, weighs more than the others. Functional is shown as a column but counts in the total (then out of 14) only when switched on in the sidebar. Weighting, and the final choice, is for the working group.</p><p>Where this goes: the working group narrows this table to a shorter list, we score Imageable ourselves on that list, as microscopists, and the 5 to 10 anchors come out of both.</p><p class="next">Click a row to see where its scores come from, with links to the sources.</p>`;
+$('intro').innerHTML=`<h2>What this is</h2><p>Anchor proteins are a small set, 5 to 10, tagged in U2-OS so the same proteins can be found across datasets: in our light microscopy and EM, and in data that already exists, such as HPA, OpenCell and copy-number studies. They are the link between those datasets.</p><p>The table is the UniProt reviewed human proteome (20,429 entries) plus genes with HPA subcellular data that are not in it, 20,661 rows in all, scored on what public databases already say.</p><p>The five proposed criteria, a sixth proposed at the Space WG on 11 Nov, and what the data can and cannot answer:</p><dl>${GROUPS.map(g=>`<dt>${g.label}${g.proposed?' (proposed)':''}</dt><dd><span class="ask">${esc(g.ask)}</span> ${esc(g.data)}</dd>`).join('')}</dl><p>Each dataset column is scored 0, 1 or 2. The total is the plain sum (2 to 12 in practice, since two columns never give 0), so Identity, with three columns, weighs more than the others. Functional (proposed) counts in the total, so it runs to 14; untick it in the sidebar for the six-column total out of 12 that the working group saw on 11 Nov. Weighting, and the final choice, is for the working group.</p><p>Where this goes: the working group narrows this table to a shorter list, we score Imageable ourselves on that list, as microscopists, and the 5 to 10 anchors come out of both.</p><p class="next">Click a row to see where its scores come from, with links to the sources.</p>`;
 
 (function(){const a=document.querySelector('aside'),sc=$('scrim');
  const open=()=>{a.classList.add('open');sc.hidden=false;document.body.style.overflow='hidden'};
@@ -706,6 +726,34 @@ $('theme').addEventListener('click',()=>{const root=document.documentElement;con
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'));$('pop').hidden=true}});
 $('dl').addEventListener('click',()=>{const keys=Object.keys(DATA[0]).filter(k=>!k.startsWith('_')&&k!=='fams'&&k!=='structs');const lines=[keys.join('\t'),...VIEW.map(r=>keys.map(k=>r[k]??'').join('\t'))];const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/tab-separated-values'}));a.download='anchor_scores_filtered.tsv';a.click()});
 
-fetch('anchor_scores.tsv').then(r=>r.text()).then(t=>{DATA=parseTSV(t);$('subtitle').textContent=`${DATA.length.toLocaleString('en')} proteins from UniProt and HPA, scored against the five proposed criteria.`;apply()}).catch(e=>{$('subtitle').textContent='Could not load anchor_scores.tsv';console.error(e)});
+// ---- side panels: drag to resize, button or [ ] to hide/show, double-click to reset; remembered per browser
+const PANEL=(()=>{const app=document.querySelector('.app');const D={lw:252,rw:352};
+  const get=k=>{try{return localStorage.getItem('panel_'+k)}catch(e){return null}};const put=(k,v)=>{try{localStorage.setItem('panel_'+k,v)}catch(e){}};
+  const st={lw:+get('lw')||D.lw,rw:+get('rw')||D.rw,lc:get('lc')==='1',rc:get('rc')==='1'};
+  const L=$('rzL'),R=$('rzR');
+  const clampL=v=>Math.max(180,Math.min(v,520,innerWidth-(st.rc?0:st.rw)-520));
+  const clampR=v=>Math.max(260,Math.min(v,760,innerWidth-(st.lc?0:st.lw)-520));
+  function lay(){st.lw=clampL(st.lw);st.rw=clampR(st.rw);
+    app.style.setProperty('--lwe',(st.lc?0:st.lw)+'px');app.style.setProperty('--rwe',(st.rc?0:st.rw)+'px');app.style.setProperty('--rw',st.rw+'px');
+    app.classList.toggle('lc',st.lc);app.classList.toggle('rc',st.rc);L.classList.toggle('col',st.lc);R.classList.toggle('col',st.rc);
+    const lb=L.querySelector('button'),rb=R.querySelector('button');
+    lb.setAttribute('aria-label',st.lc?'Show filters':'Hide filters');lb.title=st.lc?'Show filters ( [ )':'Hide filters ( [ )';lb.querySelector('path').setAttribute('d',st.lc?'M4.5 2.5 8 6l-3.5 3.5':'M7.5 2.5 4 6l3.5 3.5');
+    rb.setAttribute('aria-label',st.rc?'Show details':'Hide details');rb.title=st.rc?'Show details ( ] )':'Hide details ( ] )';rb.querySelector('path').setAttribute('d',st.rc?'M7.5 2.5 4 6l3.5 3.5':'M4.5 2.5 8 6l-3.5 3.5');
+    L.setAttribute('aria-valuenow',st.lc?0:st.lw);R.setAttribute('aria-valuenow',st.rc?0:st.rw);
+    for(const k in st)put(k,typeof st[k]==='boolean'?(st[k]?'1':'0'):st[k])}
+  function drag(el,side){el.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;e.preventDefault();el.setPointerCapture(e.pointerId);el.classList.add('drag');document.body.classList.add('resizing');
+      const mv=ev=>{if(side==='l'){st.lc=false;st.lw=ev.clientX}else{st.rc=false;st.rw=innerWidth-ev.clientX}lay()};
+      const up=()=>{el.classList.remove('drag');document.body.classList.remove('resizing');el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up)};
+      el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up)});
+    el.addEventListener('dblclick',e=>{if(e.target.closest('button'))return;if(side==='l'){st.lw=D.lw;st.lc=false}else{st.rw=D.rw;st.rc=false}lay()});
+    el.querySelector('button').addEventListener('click',()=>{if(side==='l')st.lc=!st.lc;else st.rc=!st.rc;lay()});
+    el.addEventListener('keydown',e=>{const d=e.key==='ArrowLeft'?-20:e.key==='ArrowRight'?20:0;if(d){e.preventDefault();if(side==='l'){st.lc=false;st.lw+=d}else{st.rc=false;st.rw-=d}lay()}else if(e.key==='Enter'){e.preventDefault();el.querySelector('button').click()}})}
+  drag(L,'l');drag(R,'r');addEventListener('resize',lay);
+  document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select')||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='['){st.lc=!st.lc;lay()}else if(e.key===']'){st.rc=!st.rc;lay()}});
+  lay();
+  return {showDetails(){if(st.rc){st.rc=false;lay()}}}})();
+$('tbody').addEventListener('click',()=>{if(sel)PANEL.showDetails()});
+
+fetch('anchor_scores.tsv').then(r=>r.text()).then(t=>{DATA=parseTSV(t);$('subtitle').textContent=`${DATA.length.toLocaleString('en')} proteins from UniProt and HPA, scored against the five proposed criteria plus Functional (proposed).`;setFx(FXON)}).catch(e=>{$('subtitle').textContent='Could not load anchor_scores.tsv';console.error(e)});
 </script>
 </body></html>

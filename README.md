@@ -30,7 +30,7 @@ Six criteria, each 0 to 2, summed with equal weight to a total out of 12.
 | Copy number known | in Beck 2011 | not measured | |
 | Tagged line exists | OpenCell or Allen line | none | |
 
-A seventh column, **Functional (proposed)**, was suggested at the Space WG on 11 Nov 2026: does losing the protein change the cell in published loss-of-function screens? It is shown in the table but is not in `score_total`; `score_total_with_function` (out of 14) includes it, and the page has a switch for it.
+A seventh column, **Functional (proposed)**, was suggested at the Space WG on 11 Nov 2026: does losing the protein change the cell in published loss-of-function screens? It is shown in the table but is not in `score_total`; `score_total_with_function` (out of 14) includes it. The page counts it in the total by default, with a switch to take it out.
 
 | Functional (proposed) | clear imaging phenotype in any one screen (JUMP p < 0.001, PERISCOPE 2+ conditions, Funk 6+ features or mitotic arrest, MitoCheck validated) | any other phenotype | no phenotype, or in no screen |
 
