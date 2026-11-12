@@ -133,14 +133,14 @@ def function_cols(name,acc,dep_effect):
     oh=(yn(o['hela_hit']>=3) if o['hela_tested'] else '') if o else ''   # HeLa: hit in 3 or more screens, so one noisy screen is not enough
     imaging=[x for x in (jump,per,funk,mc) if x]; img_hit=sum(x.startswith('hit') for x in imaging)
     allx=[x for x in (jump,per,funk,mc,ps,dep,ou,oh) if x]; n_hit=sum(x.startswith('hit') for x in allx)
-    # 2: a clear imaging phenotype in any one screen. 1: any other phenotype. 0: tested, no phenotype. None: in no screen
+    # 2: a clear imaging phenotype in any one screen. 1: any other phenotype. 0: no phenotype, or in no screen
     clear=[]
     if 'jump' in f and f['jump']<JUMP_CLEAR: clear.append('JUMP')
     if 'periscope' in f and len(f['periscope'])>=2: clear.append('PERISCOPE, 2+ conditions')
     if 'funk' in f and f['funk'][0] and (f['funk'][1]>=FUNK_CLEAR or f['funk'][2]): clear.append('Funk, strong')
     if 'mitocheck' in f and f['mitocheck'][2]: clear.append('MitoCheck, validated')
-    score=None if not allx else (2 if clear else (1 if n_hit else 0))
-    return dict(score_function='' if score is None else score,fx_clear_imaging='; '.join(clear),fx_screens_hit=f'{n_hit} of {len(allx)}',fx_jump_u2os=jump,fx_periscope=per,fx_funk2022_hela=funk,
+    score=2 if clear else (1 if n_hit else 0)
+    return dict(score_function=score,fx_clear_imaging='; '.join(clear),fx_screens_hit=f'{n_hit} of {len(allx)}',fx_jump_u2os=jump,fx_periscope=per,fx_funk2022_hela=funk,
                 fx_mitocheck_hela=mc,fx_perturbseq=ps,fx_orcs=orcs)
 out=[]
 for src,u,enss in rows:
@@ -193,7 +193,7 @@ with open('anchor_scores.tsv','w',newline='') as fh:
 C=collections.Counter(o['source'] for o in out); print(len(out),'proteins', dict(C))
 print('score_total distribution:'); 
 for s,n in sorted(collections.Counter(o['score_total'] for o in out).items(),reverse=True): print(f'  {s:2d}: {n}')
-print('function 2/1/0/not tested:',[sum(o['score_function']==k for o in out) for k in (2,1,0,'')])
+print('function 2/1/0 (0 incl. not tested):',[sum(o['score_function']==k for o in out) for k in (2,1,0)], 'not tested:',sum(o['fx_screens_hit'].endswith(' of 0') for o in out))
 print('clear imaging by source:',collections.Counter(x for o in out for x in o['fx_clear_imaging'].split('; ') if x))
 print('with function, 13 or 14:',sum(o['score_total_with_function']>=13 for o in out))
 print('identity 2:',sum(o['score_identity']==2 for o in out),' 1:',sum(o['score_identity']==1 for o in out))

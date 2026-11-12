@@ -32,7 +32,7 @@ Six criteria, each 0 to 2, summed with equal weight to a total out of 12.
 
 A seventh column, **Functional (proposed)**, was suggested at the Space WG on 11 Nov 2026: does losing the protein change the cell in published loss-of-function screens? It is shown in the table but is not in `score_total`; `score_total_with_function` (out of 14) includes it, and the page has a switch for it.
 
-| Functional (proposed) | clear imaging phenotype in any one screen (JUMP p < 0.001, PERISCOPE 2+ conditions, Funk 6+ features or mitotic arrest, MitoCheck validated) | any other phenotype | tested, no phenotype (blank if in no screen) |
+| Functional (proposed) | clear imaging phenotype in any one screen (JUMP p < 0.001, PERISCOPE 2+ conditions, Funk 6+ features or mitotic arrest, MitoCheck validated) | any other phenotype | no phenotype, or in no screen |
 
 Screens: JUMP Cell Painting (CRISPR, U2-OS), PERISCOPE (CRISPR, HeLa and A549), Funk 2022 (CRISPR, HeLa), MitoCheck (RNAi, HeLa), Perturb-seq (CRISPRi, K562 and RPE1), DepMap 26Q3 (U2-OS fitness), BioGRID ORCS 2.0.18 (U2-OS and HeLa CRISPR screens). Per-screen results are in the `fx_*` columns.
 
