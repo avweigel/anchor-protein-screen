@@ -126,6 +126,22 @@
   .bars{display:flex;align-items:flex-end;gap:5px;height:72px;padding:0 2px 18px;position:relative;border-bottom:1px solid var(--line)}
   .bar{flex:1;background:var(--accent-soft);border-radius:3px 3px 0 0;position:relative;min-height:2px;transition:height .25s ease,background .15s}
   .bar.hi{background:var(--accent)}
+  .bars{cursor:crosshair;user-select:none;touch-action:none}
+  .bar.out{opacity:.45}
+  .tslider{position:relative;height:26px;margin:6px 2px 0;--n:13}
+  .tslider .track{position:absolute;left:calc(100% / var(--n) / 2);right:calc(100% / var(--n) / 2);top:11px;height:4px;border-radius:2px;background:var(--line)}
+  .tslider .fill{position:absolute;top:0;bottom:0;background:var(--accent);border-radius:2px}
+  .tslider input{position:absolute;left:calc(100% / var(--n) / 2 - 9px);width:calc(100% - 100% / var(--n) + 18px);top:3px;height:20px;margin:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none}
+  .tslider input::-webkit-slider-runnable-track{background:none;height:20px}
+  .tslider input::-moz-range-track{background:none}
+  .tslider input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:18px;height:18px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:grab;margin-top:1px;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .tslider input::-moz-range-thumb{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:grab}
+  .tslider input:focus{outline:none}
+  .tslider input:focus-visible::-webkit-slider-thumb{outline:2px solid var(--accent-glow);outline-offset:2px}
+  .chart .ch .rng{font-family:var(--font-mono);font-size:11px;color:var(--accent-ink);margin-left:8px}
+  .chart .ch button.rclear{font:inherit;font-size:11px;color:var(--ink-2);background:none;border:none;text-decoration:underline;cursor:pointer;padding:0 0 0 8px}
+  .tsel{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--ink-2)}
+  .tsel select{flex:1;font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--ink)}
   .bar.cut::before{content:"";position:absolute;left:-3px;top:-6px;bottom:-1px;width:2px;background:var(--accent-glow);border-radius:1px}
   .bar span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3)}
   .bar em{position:absolute;top:-15px;left:-6px;right:-6px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--ink-2);font-style:normal;font-variant-numeric:tabular-nums}
@@ -405,9 +421,9 @@
     <h3>Copies per cell</h3>
     <p class="fhint">Beck 2011, U2-OS. Enough to count, not saturating.</p>
     <div class="cprange"><input type="text" id="cmin" inputmode="decimal" placeholder="min, e.g. 1000"><span>to</span><input type="text" id="cmax" inputmode="decimal" placeholder="max, e.g. 1e6"></div>
-    <h3>Total score at least</h3>
-    <div class="range"><input type="range" id="minTotal" min="0" max="12" value="0"></div>
-    <div class="mini"><span>0</span><b id="minTotalLbl">any</b><span id="maxTotalLbl">12</span></div>
+    <h3>Total score</h3>
+    <p class="fhint">Or drag across the score chart.</p>
+    <div class="tsel"><span>from</span><select id="selLo" aria-label="Lowest total score"></select><span>to</span><select id="selHi" aria-label="Highest total score"></select></div>
     <label class="chk"><input type="checkbox" id="f-fx" checked> Count Functional (proposed) in the total, out of 14</label>
     <h3>Other</h3>
     <label class="chk"><input type="checkbox" id="f-nothpa"> Not in HPA, or no HPA IF data</label>
@@ -418,8 +434,9 @@
 
   <main>
     <div class="chart">
-      <div class="ch"><h4 id="chartTitle">Score distribution</h4><small id="chartSub">total score, 0 to 12</small></div>
-      <div class="bars" id="bars"></div>
+      <div class="ch"><h4><span id="chartTitle">Score distribution</span><span class="rng" id="rngLbl"></span><button class="rclear" id="rclear" hidden>show all scores</button></h4><small id="chartSub">total score, 0 to 12</small></div>
+      <div class="bars" id="bars" title="Drag across the bars, or click one, to show only those scores"></div>
+      <div class="tslider" id="tslider"><div class="track"><div class="fill" id="tfill"></div></div><input type="range" id="tlo" min="0" max="12" value="0" aria-label="Lowest total score shown"><input type="range" id="thi" min="0" max="12" value="12" aria-label="Highest total score shown"></div>
     </div>
     <div class="key" id="key"></div>
     <div class="chips" id="chips" hidden></div>
@@ -523,11 +540,11 @@ const COLS=[['gene_name','Gene'],['em_structures','Structures'],...GROUPS.flatMa
 const NUM=new Set(['score_total','score_total_with_function','copies_per_cell_U2OS','u2os_ntpm',...CRITS.map(c=>c[0])]);
 let FXON=true;const MAXT=()=>FXON?14:12;
 const CENTER=new Set(CRITS.map(c=>c[0]));
-let DATA=[],BASE=[],VIEW=[],sel=null,shown=0;
+let DATA=[],BASE=[],VIEW=[],HISTV=[],sel=null,shown=0;
 let SORT=[{k:'score_total',d:-1}];
 const sortIdx=k=>SORT.findIndex(x=>x.k===k);
 const LABEL=k=>k==='gene_name'?'Gene':k==='em_structures'?'Structures':k==='score_total'?'Total':k==='copies_per_cell_U2OS'?'Copies/cell':k.startsWith('_g_')?GROUPS.find(g=>'_g_'+g.k===k).label:(CRIT[k]?CRIT[k][2]:k);
-const S0=()=>({q:'',fams:new Set(),structs:new Set(),nothpa:false,tm:false,minTotal:0,crit:{},cmin:null,cmax:null});
+const S0=()=>({q:'',fams:new Set(),structs:new Set(),nothpa:false,tm:false,minTotal:0,maxTotal:null,crit:{},cmin:null,cmax:null});
 let S=S0();
 GROUPS.forEach(g=>{if(g.crits.length)NUM.add('_g_'+g.k)});
 const $=id=>document.getElementById(id);
@@ -546,12 +563,15 @@ function apply(){
     if(q&&!r._q.includes(q))return false;
     if(S.nothpa&&r.source==='UniProt+HPA')return false;
     if(S.tm&&r.transmembrane!=='yes')return false;
-    if(r.score_total<S.minTotal)return false;
     for(const k in S.crit)if(r[k]<S.crit[k])return false;
     if(S.cmin!=null||S.cmax!=null){const c=r.copies_per_cell_U2OS;if(c==null)return false;if(S.cmin!=null&&c<S.cmin)return false;if(S.cmax!=null&&c>S.cmax)return false}
     return true};
-  BASE=DATA.filter(base);
-  VIEW=(S.fams.size||S.structs.size)?BASE.filter(r=>r.fams.some(f=>S.fams.has(f))||r.structs.some(x=>S.structs.has(x))):BASE;
+  const inT=r=>r.score_total>=S.minTotal&&(S.maxTotal==null||r.score_total<=S.maxTotal);
+  const famF=r=>!(S.fams.size||S.structs.size)||r.fams.some(f=>S.fams.has(f))||r.structs.some(x=>S.structs.has(x));
+  const B0=DATA.filter(base);
+  BASE=B0.filter(inT);            // family counts in the sidebar respect the score range
+  HISTV=B0.filter(famF);          // the histogram shows every score, so the range can be seen and moved
+  VIEW=HISTV.filter(inT);
   sortView();syncSidebar();renderChips();render();if(window.__mobileFiltersSync)window.__mobileFiltersSync()}
 function activeFilters(){
   const a=[];
@@ -559,7 +579,7 @@ function activeFilters(){
   for(const f of S.fams)a.push({t:`<b>${esc(FAMLBL[f]||f)}</b>`,off:()=>S.fams.delete(f)});
   for(const x of S.structs)a.push({t:`<b>${esc(x)}</b>`,off:()=>S.structs.delete(x)});
   for(const k in S.crit)a.push({t:`${CRIT[k][2]} ${S.crit[k]===2?'= 2':'≥ 1'}`,off:()=>{delete S.crit[k]}});
-  if(S.minTotal)a.push({t:`Total ≥ <b>${S.minTotal}</b>`,off:()=>{S.minTotal=0}});
+  if(S.minTotal||S.maxTotal!=null)a.push({t:`Total <b>${S.minTotal}${S.maxTotal!=null?(S.maxTotal===S.minTotal?'':'–'+S.maxTotal):'–'+MAXT()}</b>`,off:()=>{S.minTotal=0;S.maxTotal=null}});
   if(S.cmin!=null||S.cmax!=null)a.push({t:`Copies/cell ${S.cmin!=null?'≥ '+fmtNum(S.cmin):''}${S.cmin!=null&&S.cmax!=null?' and ':''}${S.cmax!=null?'≤ '+fmtNum(S.cmax):''}`,off:()=>{S.cmin=null;S.cmax=null;$('cmin').value='';$('cmax').value=''}});
   if(S.nothpa)a.push({t:'Not in HPA, or no IF data',off:()=>{S.nothpa=false}});
   if(S.tm)a.push({t:'Transmembrane',off:()=>{S.tm=false}});
@@ -574,7 +594,7 @@ function syncSidebar(){
   document.querySelectorAll('.fam:not(.sub)').forEach(d=>{const f=d.dataset.f;d.classList.toggle('on',S.fams.has(f));d.classList.toggle('part',!S.fams.has(f)&&(SUBS[f]||[]).some(x=>S.structs.has(x)))});
   document.querySelectorAll('.fam.sub').forEach(d=>d.classList.toggle('on',S.fams.has(d.dataset.p)||S.structs.has(d.dataset.s)));
   document.querySelectorAll('.crit').forEach(c=>{const v=S.crit[c.dataset.k]||0;c.querySelectorAll('b').forEach(b=>b.classList.toggle('on',+b.dataset.v===v))});
-  $('minTotal').value=S.minTotal;$('minTotalLbl').textContent=S.minTotal?S.minTotal+' and up':'any';
+  syncTotal();
   $('f-nothpa').checked=S.nothpa;$('f-tm').checked=S.tm;if($('q').value!==S.q)$('q').value=S.q}
 function resetAll(){S=S0();$('cmin').value='';$('cmax').value='';apply()}
 function cmp(a,b,k,d){let x=a[k],y=b[k];if(NUM.has(k)){x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*d}return String(x).localeCompare(String(y))*d}
@@ -595,8 +615,8 @@ function render(){
   for(const f of FAMS){const el=document.querySelector(`.fam[data-f="${f}"] small`);if(el)el.textContent=famCount[f].toLocaleString('en')}
   const stCount={};for(const r of BASE)for(const x of r.structs)stCount[x]=(stCount[x]||0)+1;
   document.querySelectorAll('.fam.sub').forEach(d=>{d.querySelector('small').textContent=(stCount[d.dataset.s]||0).toLocaleString('en')});
-  const hist=new Array(MAXT()+1).fill(0);for(const r of VIEW)hist[r.score_total]++;const mx=Math.max(1,...hist);
-  $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal?'hi':''} ${S.minTotal&&i===S.minTotal?'cut':''}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?(n>=1000&&innerWidth<760?(n/1000).toFixed(1).replace(/\.0$/,'')+'k':n.toLocaleString('en')):''}</em><span>${i}</span></div>`).join('');
+  const hist=new Array(MAXT()+1).fill(0);for(const r of HISTV)hist[r.score_total]++;const mx=Math.max(1,...hist);
+  $('bars').innerHTML=hist.map((n,i)=>`<div class="bar ${i>=S.minTotal&&(S.maxTotal==null||i<=S.maxTotal)?'hi':'out'}" data-s="${i}" style="height:${Math.max(2,n/mx*100)}%"><em>${n?(n>=1000&&innerWidth<760?(n/1000).toFixed(1).replace(/\.0$/,'')+'k':n.toLocaleString('en')):''}</em><span>${i}</span></div>`).join('');
   $('chartTitle').textContent=`${VIEW.length.toLocaleString('en')} proteins in the current view`;
   $('count').innerHTML=(activeFilters().length?`<span class="mono">${VIEW.length.toLocaleString('en')}</span> of <span class="mono">${DATA.length.toLocaleString('en')}</span> proteins match`:`<span class="mono">${DATA.length.toLocaleString('en')}</span> proteins`)+' · click a heading to sort, shift-click to add a level, a row to open';
   const TIP=Object.fromEntries(CRITS.map(c=>[c[0],c[2]+'. '+c[3]]));TIP.score_total=FXON?'Sum of the seven columns, equal weight, including Functional (proposed). Out of 14.':'Sum of the six columns, equal weight, out of 12 (2 to 12 in practice, since two columns never give 0). Functional (proposed) is not included; switch it on in the sidebar.';TIP.copies_per_cell_U2OS='Copies per cell in U2-OS, Beck et al. 2011.';TIP.em_structures='Structures the protein is annotated on, from HPA and UniProt. Dashed means a broad class.';
@@ -712,9 +732,28 @@ $('crits').innerHTML=GROUPS.filter(g=>g.crits.length).map(g=>`<div class="critg"
 $('crits').addEventListener('click',e=>{const b=e.target.closest('b');if(!b)return;const k=b.closest('.crit').dataset.k;const v=+b.dataset.v;if(v)S.crit[k]=v;else delete S.crit[k];apply()});
 $('q').addEventListener('input',e=>{S.q=e.target.value;apply()});
 for(const [id,k] of [['f-nothpa','nothpa'],['f-tm','tm']])$(id).addEventListener('change',e=>{S[k]=e.target.checked;apply()});
-$('minTotal').addEventListener('input',e=>{S.minTotal=+e.target.value;apply()});
+// ---- total score range: two-thumb slider under the chart, drag or click on the bars, or the sidebar selects
+function setRange(lo,hi){const m=MAXT();lo=Math.max(0,Math.min(m,lo));hi=Math.max(0,Math.min(m,hi));if(lo>hi)[lo,hi]=[hi,lo];S.minTotal=lo;S.maxTotal=hi>=m?null:hi;apply()}
+function syncTotal(){const m=MAXT(),lo=S.minTotal,hi=S.maxTotal??m;
+  for(const id of ['tlo','thi']){$(id).max=m}$('tlo').value=lo;$('thi').value=hi;$('tslider').style.setProperty('--n',m+1);
+  $('tfill').style.left=(lo/m*100)+'%';$('tfill').style.right=((m-hi)/m*100)+'%';
+  const opts=Array.from({length:m+1},(_,i)=>`<option value="${i}">${i}</option>`).join('');
+  if($('selLo').options.length!==m+1){$('selLo').innerHTML=opts;$('selHi').innerHTML=opts}
+  $('selLo').value=lo;$('selHi').value=hi;
+  const on=lo>0||S.maxTotal!=null;$('rngLbl').textContent=on?`· scores ${lo}${hi!==lo?'–'+hi:''}`:'';$('rclear').hidden=!on}
+$('tlo').addEventListener('input',e=>{const v=+e.target.value,hi=S.maxTotal??MAXT();if(v>hi){e.target.value=hi;return}setRange(v,hi)});
+$('thi').addEventListener('input',e=>{const v=+e.target.value;if(v<S.minTotal){e.target.value=S.minTotal;return}setRange(S.minTotal,v)});
+$('selLo').addEventListener('change',e=>setRange(+e.target.value,Math.max(+e.target.value,S.maxTotal??MAXT())));
+$('selHi').addEventListener('change',e=>setRange(Math.min(S.minTotal,+e.target.value),+e.target.value));
+$('rclear').addEventListener('click',()=>setRange(0,MAXT()));
+(function(){const bars=$('bars');let anchor=null,moved=false;
+  const at=e=>{const r=bars.getBoundingClientRect();const n=MAXT()+1;return Math.max(0,Math.min(n-1,Math.floor((e.clientX-r.left)/r.width*n)))};
+  bars.addEventListener('pointerdown',e=>{anchor=at(e);moved=false;bars.setPointerCapture(e.pointerId)});
+  bars.addEventListener('pointermove',e=>{if(anchor==null)return;const j=at(e);if(j!==anchor||moved){moved=true;setRange(Math.min(anchor,j),Math.max(anchor,j))}});
+  const end=e=>{if(anchor==null)return;if(!moved){const hi=S.maxTotal??MAXT();if(S.minTotal===anchor&&hi===anchor)setRange(0,MAXT());else setRange(anchor,anchor)}anchor=null};
+  bars.addEventListener('pointerup',end);bars.addEventListener('pointercancel',()=>{anchor=null})})();
 function setFx(on){FXON=on;for(const r of DATA)r.score_total=on?(r.score_total_with_function??r._t6):r._t6;
-  const m=MAXT();$('minTotal').max=m;if(S.minTotal>m)S.minTotal=m;$('maxTotalLbl').textContent=m;$('chartSub').textContent=`total score, 0 to ${m}`;
+  const m=MAXT();if(S.minTotal>m)S.minTotal=m;if(S.maxTotal!=null&&S.maxTotal>=m)S.maxTotal=null;$('chartSub').textContent=`total score, 0 to ${m}`;
   $('f-fx').checked=on;apply();if(sel)showDetail(sel)}
 $('f-fx').addEventListener('change',e=>setFx(e.target.checked));
 const parseCopies=v=>{v=String(v).trim().replace(/[,\s]/g,'');if(!v)return null;const n=Number(v);return isFinite(n)?n:null};
